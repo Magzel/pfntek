@@ -1256,7 +1256,10 @@ if ($wo['loggedin'] && $IsOwnerUser) {
 						</span>
 
 					<?php } ?>
+					<div class="sun_user_actions_item">
+                                                <a href="<?php echo $site_url . "/messages" . "/" .$wo['user_profile']['id']; ?>" target="_blank"><i class="ri-message-fill">&nbsp;<span><img src="https://img.icons8.com/ios/30/null/chat-message--v1.png"/></span></i></a>
 
+                 </div>
 					<?php if($IsOwnerUser === false && $wo['loggedin'] == true) { ?>
 						<span class="sun_user_actions_item" title="<?php echo $wo['lang']['block_user'];?>">
 							<a href="<?php echo $wo['marker'] . 'block_user=block'?>"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M12,0A12,12 0 0,1 24,12A12,12 0 0,1 12,24A12,12 0 0,1 0,12A12,12 0 0,1 12,0M12,2A10,10 0 0,0 2,12C2,14.4 2.85,16.6 4.26,18.33L18.33,4.26C16.6,2.85 14.4,2 12,2M12,22A10,10 0 0,0 22,12C22,9.6 21.15,7.4 19.74,5.67L5.67,19.74C7.4,21.15 9.6,22 12,22Z" /></svg></a>
@@ -1281,13 +1284,14 @@ if ($wo['loggedin'] && $IsOwnerUser) {
 							<span class="sun_user_actions_item" id="report_status" onclick="Wo_ReportProfile(<?php echo $wo['user_profile']['id']; ?>,false);" title="<?php echo $wo['lang']['unreport']; ?>">
 								<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M14.4,6L14,4H5V21H7V14H12.6L13,16H20V6H14.4Z" /></svg>
 							</span>
+							<div class="sun_user_actions_item">
+                                                <a href="<?php echo $site_url . "/messages" . "/" .$wo['user_profile']['id']; ?>" target="_blank"><i class="ri-message-fill">&nbsp;<span><img src="https://img.icons8.com/ios/40/null/chat-message--v1.png"/></span></i></a>
+
+                 </div>
 						<?php endif; ?>
 					<?php endif;?>	
-					<br><br>	
-					<div class="sun_user_actions_item">
-                                                <a href="<?php echo   $site_url . "/messages" . "/" .$wo['user_profile']['id']; ?>" target="_blank"><i class="ri-message-fill">&nbsp;<span>Massage</span></i></a>
+							
 
-                                            </div>
 				</div>
 			
 				<?php if($wo['loggedin'] == true && $wo['config']['gift_system'] != 0) {  ?>
