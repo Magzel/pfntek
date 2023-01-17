@@ -1,0 +1,184 @@
+<?php
+global $site_url, $wo;
+$site_url = $site_url . '/';
+$group_id = $_GET['group_id'];
+$accestoken = Wo_access_token($wo['user']['id']);
+// list of user interest for multi selector
+$post_data = array(
+    "server_key" => $wo['config']['widnows_app_api_key'],
+    "group_id" => $group_id
+);
+$api_url = "api/detail-groups?access_token=" . $accestoken;
+$edit_group_detail_data = invokeApi('POST', $api_url, $post_data);
+$detail_data = $edit_group_detail_data['data']['data'];
+if (isset($_POST['submit'])) {
+    $name = $_POST['name'];
+    if (!empty($_FILES['cover_image']['name'])) {
+        $cover_image = new CURLFile($_FILES['cover_image']['tmp_name'], $_FILES['cover_image']['type'], $_FILES['cover_image']['name']);
+        $cover_image_name = $_FILES['cover_image']['name'];
+    }
+    if (!empty($_FILES['profile_image']['name'])) {
+        $profile_image = new CURLFile($_FILES['profile_image']['tmp_name'], $_FILES['profile_image']['type'], $_FILES['profile_image']['name']);
+        $profile_image_name = $_FILES['profile_image']['name'];
+    }
+    $short_discription = $_POST['short_discription'];
+    $detail_discription = $_POST['detail_discription'];
+    $group_type = $_POST['group_type'];
+    if ($name == "") {
+        $error = "Name is Required";
+    } elseif ($short_discription == "") {
+        $error = "Short Describtion  is required";
+    } elseif ($detail_discription == "") {
+        $error = "Detail discription  is required";
+    } elseif ($group_type == "") {
+        $error = "Group type is required";
+    }
+
+    if ($error == "") {
+        $post_data = array(
+            "name" => $name,
+            "cover_image" => $cover_image,
+            "cover_image_name" => $cover_image_name,
+            "profile_image" => $profile_image,
+            "profile_image_name" => $profile_image_name,
+            "short_discription" => $short_discription,
+            "detail_discription" => $detail_discription,
+            "group_type" => $group_type,
+            "server_key" => $wo['config']['widnows_app_api_key'],
+            'id' => $group_id
+        );
+        $api_url = "api/edit-groups?access_token=" . $accestoken;
+        $response = invokeApi('POST', $api_url, $post_data);
+        if ($response['data']['api_status'] == "200") {
+            header("Location: " . Wo_Link('index.php?link1=chat-rooms&chat_list=' . $group_type));
+        } else {
+            $error = "Something went wrong please contact to support";
+        }
+    }
+}
+?>
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.2.0/fonts/remixicon.css" rel="stylesheet">
+<div class="" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="edit-chat-room" class="d-flex flex-row justify-content-start align-items-center">
+                <a href=""><i class="ri-arrow-left-circle-fill"></i></a>
+                <h3>Edit Chat Room</h3>
+            </div>
+
+            <form id="contact" action="" method="POST" class="section contact" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="choose-file" style="padding: 0px;">
+                        <div class="uploading" style="padding: 0px;">
+                            <button type="button" class="btn-file" style="padding: 0px;">
+                                <!-- <div id="cover-photo">
+                                    <i class="ri-image-line"></i>
+                                    <span>Cover Photo</span>
+                                </div> -->
+                                <input type="file" accept="image/*" name="cover_image" onchange="readURL(this);" accept="">
+                                <img class="add-img-media" id="blah" src="<?php echo $site_url . $detail_data['cover_image'] ?>" width="570px" height="200px" />
+                            </button>
+
+                        </div>
+                    </div>
+                    <div id="btn-img">
+                        <button type="button" class="btn-file" style="padding: 0px;">
+                            <!-- <div id="image-icon">
+                                <i class="ri-image-line"></i>
+                                <span>Profile Photo</span>
+                            </div> -->
+                            <input type="file" accept="image/*" name="profile_image" accept="" onchange="readURL2(this);">
+                            <img class="add-img-media" id="blah2" src="<?= $site_url . '/' . $detail_data['profile_image'] ?>" width="60px" height="50px" />
+                        </button>
+                    </div>
+
+                    <div class="reqiured-tit">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label style=" padding: 0px; margin: 9px 0px 8px 5px;" for="Add Post Title">Name</label>
+                                <input type="text" class="form-control" style="background-color: #f9f9f9;height: 45px;" id="Post Title" name="name" placeholder="Name" value="<?php echo $detail_data['name'] ?>" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label style=" padding: 0px; margin: 9px 0px 8px 5px;" for="Add Post Title">Short Describtion</label>
+                                <input type="text" class="form-control" style="background-color: #f9f9f9;height: 45px;" id="Post Title" name="short_discription" placeholder="Short Discription" value="<?php echo $detail_data['short_discription'] ?>" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label style=" padding: 0px; margin: 9px 0px 8px 5px;" for="Add Post Title">Group Privacy</label>
+                                <select style="background-color: #f9f9f9;height: 45px;" class="form-control" name="group_type" id="">
+                                    <option value="1" <?php if ($detail_data['group_type'] == 1) {
+                                                            echo 'selected';
+                                                        } ?>>Private</option>
+                                    <option value="0" <?php if ($detail_data['group_type'] == 0) {
+                                                            echo 'selected';
+                                                        } ?>>Public</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label for="Add Post Title">Detail Describtion </label>
+                            <div class="container" style="width:100%">
+                                <textarea class="form-control" style="background-color: #f9f9f9;height: 95px;margin-bottom:20px;" name="detail_discription" class="mb-lg-8" value="<?php $detail_discription ?>"><?php echo $detail_data['detail_discription'] ?></textarea>
+                            </div>
+                        </div>
+                        <button class="btn-post" name="submit" type="submit">Edit Group</button>
+                    </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+
+        // Attach Button click event listener 
+        $("#add").click(function() {
+            // show Modal
+            $('#myModal').modal('show');
+
+        });
+    });
+
+    function readURL(input) {
+
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function(e) {
+                $('#blah')
+                    .attr('src', e.target.result)
+                    .width(570)
+                    .height(200);
+
+                $('#cover-photo').css('display', 'none');
+                $('.uploading').css('padding', '0px');
+                $('.choose-file').css('padding', '0px');
+
+                $('.btn-file').css('padding', '0px');
+            };
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function readURL2(input) {
+
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function(e) {
+                $('#blah2')
+                    .attr('src', e.target.result)
+                    .width(60)
+                    .height(50);
+
+                $('#image-icon').css('display', 'none');
+                $('#image-icon').css('padding', '0px');
+                $('#btn-img').css('padding', '0px');
+                $('.btn-file').css('padding', '0px');
+
+            };
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>

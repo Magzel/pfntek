@@ -1,0 +1,19 @@
+.feedback {
+
+    margin-top: 40px;
+
+}
+
+label {
+    padding: 0px !important;
+
+}
+
+.inner-feedback {
+    border-radius: 10px;
+}
+
+.common {
+    background-color: #f9f9f9;
+    height: 45px;
+}

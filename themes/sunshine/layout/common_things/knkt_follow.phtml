@@ -1,0 +1,13 @@
+<?php
+global $site_url, $wo;
+$following_id = $_POST['following_id'];
+$accestoken = Wo_access_token($wo['user']['id']);
+$api_url = "api/follow-user?access_token=" . $accestoken;
+// fellow 
+$post_data = array(
+    "server_key" => $wo['config']['widnows_app_api_key'],
+    'user_id' => $following_id
+);
+$post_list_data = invokeApi('POST', $api_url, $post_data);
+echo json_encode($post_list_data);
+die;

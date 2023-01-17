@@ -1,0 +1,47 @@
+<?php
+// +------------------------------------------------------------------------+
+// | @author Deen Doughouz (DoughouzForest)
+// | @author_url 1: http://www.wowonder.com
+// | @author_url 2: http://codecanyon.net/user/doughouzforest
+// | @author_email: wowondersocial@gmail.com   
+// +------------------------------------------------------------------------+
+// | WoWonder - The Ultimate Social Networking Platform
+// | Copyright (c) 2018 WoWonder. All rights reserved.
+// +------------------------------------------------------------------------+
+$response_data   = array(
+    'api_status' => 400
+);
+$required_fields = array(
+    'interest_id',
+);
+
+foreach ($required_fields as $key => $value) {
+    if (empty($_POST[$value]) && empty($error_code)) {
+        $error_code    = 3;
+        $error_message = $value . ' (POST) is missing';
+    }
+}
+
+if (empty($error_code)) {
+    $interest_id     = Wo_Secure($_POST['interest_id']);
+
+    if (empty($_POST['interest_id'])) {
+        $error_code    = 4;
+        $error_message = 'Intrest is Required';
+    } 
+    
+    if (empty($error_code)) {
+        $post_data  = array(
+            'interest_id' => $interest_id,
+
+        );
+        $get_post_by_interest = get_post_by_interest_id($post_data);     
+        if ($get_post_by_interest) {
+            $response_data = array(
+                'api_status' => 200,
+                'message'=>"Post Created Successfully",
+                'data' => $get_post_by_interest
+            );
+        }
+    }
+}

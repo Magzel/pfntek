@@ -1,0 +1,75 @@
+<?php
+global $site_url, $wo;
+$accestoken = Wo_access_token($wo['user']['id']);
+$post_data = array(
+  "server_key" => $wo['config']['widnows_app_api_key']
+);
+// user interest list 
+$api_url = "api/list-user-interest?access_token=" . $accestoken;
+$interest_show_data_response = invokeApi('POST', $api_url, $post_data);
+$user_interest_list = $interest_show_data_response['data']['data']['all_interest'];
+// user exist 
+$api_url = "api/user-interest-exist?access_token=" . $accestoken;
+$user_interst_exist_response = invokeApi('POST', $api_url, $post_data);
+
+if (isset($_POST['submit'])) {
+  $ids = $_POST['interest_id'];
+  if (empty($_POST['interest_id'])) {
+    $error = "Select One Catagory Aleast";
+  }
+  if (empty($error)) {
+    $ids = implode(',', $ids);
+    $post_data = array(
+      "server_key" => $wo['config']['widnows_app_api_key'],
+      'interest_id' => $ids,
+    );
+    $api_url = "api/user-interest?access_token=" . $accestoken;
+    $response = invokeApi('POST', $api_url, $post_data);
+    $wo['interest'] = "1";
+    if ($response['httpCode'] == 200) {
+      header("Location: " . Wo_Link('index.php?link1=kntn_catagory'));
+    }
+  }
+}
+?>
+<?php if ($user_interst_exist_response['data']['message'] === "User Not Exist") { ?>
+  <form id="" action="" method="POST" class="" enctype="multipart/form-data">
+    <?php
+    if ($error != "") {
+    ?>
+      <div class="alert text-center alert-danger alert-dismissible " role="alert" style="width:50%; margin-left:23%; margin-right:25%;margin-top: 40px; background: #4D91EA;color: white;">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+        <?= $error; ?>
+      </div>
+    <?php } else if ($success != "") {
+    ?>
+      <div class="alert text-center alert-success alert-dismissible " role="alert" style="width:50%; margin-left:23%; margin-right:25%;">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+        <?= $success; ?>
+      </div>
+    <?php } ?>
+    <div id="setMainDiv">
+      <?php foreach ($user_interest_list as $interest_list) { ?>
+        <div id="flexbox1">
+          <div class="column1">
+            <input onclick="myFunction()" type="checkbox" class="select-interest" name="interest_id[]" value="<?php echo $interest_list['id'] ?>" id="cb<?php echo $interest_list['id'] ?>" />
+            <label for="cb<?php echo $interest_list['id'] ?>">
+              <img id="setimg" class="imagess" src="<?php echo $site_url . '/' . $interest_list['image']; ?>" />
+              <div class="centered">
+                <h4><?php echo $interest_list['name'] ?></h4>
+              </div>
+            </label>
+          </div>
+        </div>
+      <?php } ?>
+    </div>
+    <div class="btn-submit">
+      <button type="submit" name="submit" class="btn-btn1">Submit</button>
+    </div>
+  </form>
+<?php } ?>
+<script>
+  <?php if ($user_interst_exist_response['data']['message'] === "User Exist") { ?>
+    window.location.replace(<?php $site_url . "/" ?> "index.php?link1=kntn_catagory");
+  <?php } ?>
+</script>

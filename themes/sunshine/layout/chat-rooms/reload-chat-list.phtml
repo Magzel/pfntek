@@ -1,0 +1,105 @@
+<?php
+global $site_url, $wo;
+$group_id = $_POST['group_id'];
+$accestoken = Wo_access_token($wo['user']['id']);
+$api_url = 'api/list-group-message?access_token=' . $accestoken;
+$post_data = array(
+    'server_key' => $wo['config']['widnows_app_api_key'],
+    'group_id' => $group_id,
+);
+$group_chat_list = invokeApi('POST', $api_url, $post_data);
+$chat_data = $group_chat_list['data']['data'];
+$output = "";
+?>
+
+<?php foreach ($chat_data as $message) {
+    if ($message['sender_id'] != $wo['user']['id']) {
+        if ($message['admin_id'] == $wo['user']['user_id']) {
+            // $three_dot = "show-3-dots";
+        } else {
+            $three_dot = "hide-3-dots";
+        }
+        $output .= "<div style='display: flex;flex-direction:row;gap:3px; '>
+        <div style='display: flex;'>
+            <div class='sending-msg' style='width:100%;display: flex; flex-direction:row;  align-items: flex-start'>
+                <div style='display:flex' id='lblTime'>
+                    <div class='user-inbox1 inbox'>
+                        <div class='userimges'>
+                            <img src=" . $message['sender_image'] . " alt='' class='cover'>
+                        </div>
+                        <div class='msg-header1 '>
+                            <div class='upper'><a href=" . $site_url . '/' . 'messages/' . $message['sender_id'] . "><small>" . $message['user_name'] . "</small></a>
+                            <span class='dropdown   icon-burger'>
+                            <a href='#' id=" . $three_dot . " class='dropdown-toggle' data-toggle='dropdown' role='button' aria-expanded='false'> <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-three-dots' viewBox='0 0 16 16'>
+                            <path d='M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z' />
+                        </svg> 
+                        </a>
+                    <ul class='dropdown-menu post-privacy-menu post-options' role='menu'>
+                        <li> <a href='#'>Delete For Everyone</a></li>
+                        </ul>
+                        </span>
+
+                            </div>" ?>
+        <?php if ($message['message_image'] && empty($message['message'])) { ?>
+            <?php $output .= "<img style='width: 134px' src=" . $site_url . '/' . $message['message_image'] . ">" ?><?php $output .= "<small class='time-append'>" . $message['time'] . "</small>" ?>
+        <?php  } else if ($message['message_image'] && $message['message']) {
+        ?>
+            <?php $output .= "<img style='width: 134px;' src=" . $site_url . '/' . $message['message_image'] . ">" ?>
+            <?php $output .= "<p>" . $message['message'] . " <small class='time-append'>" . $message['time'] . "</small></p>" ?>
+        <?php } else if ($message['message']) { ?>
+        <?php $output .= "<p>" . $message['message'] . " <small class='time-append'>" . $message['time'] . "</small></p>";
+        } ?>
+        
+        <?php $output .= "
+        </div>
+        </div>
+
+        </div>
+
+        </div>
+        </div>
+        </div>";
+    } else {
+        $output .= "<div style='display: flex;flex-direction:column;gap:3px; '>
+            <div style='display: flex;'>
+                <div class='sending-msg' style='width:100%;display: flex; flex-direction:column;  align-items: flex-end'>
+                    <div style='display:flex' id='lblTime'>
+                        <div class='user-inbox inbox'>
+                            <div class='msg-header '>
+                                <div class='upper'><small>" . $message['user_name'] . "</small>
+                                    <span class='dropdown   icon-burger'>
+                                        <a href='#' id=" . $three_dot . " class='dropdown-toggle' data-toggle='dropdown' role='button' aria-expanded='false'> <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-three-dots' viewBox='0 0 16 16'>
+                                                <path d='M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z' />
+                                            </svg>
+                                        </a>
+                                        <ul class='dropdown-menu post-privacy-menu post-options' role='menu'>
+                                            <li><a href='#'>Delete For Everyone</a></li>
+                                        </ul>
+                                    </span>
+
+                                </div>" ?>
+                                <?php if ($message['message_image'] && empty($message['message'])) { ?>
+                                    <?php $output .= "<img style='width: 134px' src=" . $site_url . '/' . $message['message_image'] . ">" ?><?php $output .= "<small class='time-append'>" . $message['time'] . "</small>" ?>
+                                <?php  } else if ($message['message_image'] && $message['message']) {
+                                ?>
+                                    <?php $output .= "<img style='width: 134px;' src=" . $site_url . '/' . $message['message_image'] . ">" ?>
+                                    <?php $output .= "<p>" . $message['message'] . " <small class='time-append'>" . $message['time'] . "</small></p>" ?>
+                                <?php } else if ($message['message']) { ?>
+                                <?php $output .= "<p>" . $message['message'] . " <small class='time-append'>" . $message['time'] . "</small></p>";
+                                } ?>
+
+                        <?php $output .= "
+                                </div>
+                            </div>
+                            <div class='userimges'><img src=" . $message['sender_image'] . " alt='' class='cover'> </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>";
+                    }
+                }
+                echo $output;
+                die;
+
+                        ?>

@@ -1,0 +1,23 @@
+<?php
+$unread_class = '';
+$message = Wo_GetMessagesHeader(array('user_id' => $wo['message']['user_id']), 'user');
+
+if (!empty($message['from_id'])) {
+   if ($message['seen'] == 0 && $wo['message']['user_id'] == $message['from_id']) {
+    $unread_class = ' unread';
+   }
+   //$message['text'] = mb_substr( $message['text'], 0, 70, "utf-8") . '...';
+}
+
+$message_event = "Wo_OpenChatTab({$wo['message']['user_id']});";
+
+if (strpos($_SERVER["HTTP_REFERER"], 'messages') !== false) {
+   $message_event = "Wo_GetUserMessages({$wo['message']['user_id']},'{$wo['message']['name']}');";
+}
+$message['text'] = Wo_Emo($message['text']);
+?>
+<li class="fab-action">
+   <div onclick="<?php echo $message_event ?>">      
+     <img src="<?php echo $wo['message']['avatar']; ?>" alt="<?php echo $wo['message']['name']; ?>-p">      
+   </div>
+</li>

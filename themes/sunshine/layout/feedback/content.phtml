@@ -1,0 +1,110 @@
+<?php
+global $site_url, $wo;
+$error = $name = $email = $description = "";
+$accestoken = Wo_access_token($wo['user']['id']);
+if (isset($_POST['submit'])) {
+  $name = $_POST['name'];
+  $email = $_POST['email'];
+  $query_type = $_POST['query_type'];
+  $description = $_POST['description'];
+  if ($name == "") {
+    $error = "Name is Required";
+  } else if ($email == "") {
+    $error = "Email is Required";
+  } else if ($description == "") {
+    $error = "Description is Required";
+  }
+  if ($error == "") {
+    $post_data = array(
+      "name" => $name,
+      "email" => $email,
+      "query_type" => $query_type,
+      "query" => $description,
+      "server_key" => $wo['config']['widnows_app_api_key'],
+    );
+    $api_url = "api/add-feedback?access_token=" . $accestoken;
+    $response = invokeApi('POST', $api_url, $post_data);
+    if ($response['data']['api_status'] == "200") {
+      header("Location: " . Wo_Link('index.php?link1=thankyou'));
+    } else {
+      $error = "Something went wrong please contact to support";
+    }
+  }
+}
+?>
+<div class="feedback">
+  <?php
+  if ($error != "") {
+  ?>
+    <div class="alert text-center alert-danger alert-dismissible " role="alert" style="width:50%; margin-left:23%; margin-right:25%;margin-top: 40px; background: #4D91EA;color: white;">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+      <?= $error; ?>
+    </div>
+  <?php } else if ($success != "") {
+  ?>
+    <div class="alert text-center alert-danger alert-dismissible " role="alert" style="width:50%; margin-left:23%; margin-right:25%;margin-top: 40px; background: #4D91EA;color: white;">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+      <?= $success; ?>
+    </div>
+  <?php } ?>
+  <div class="modal-content container inner-feedback">
+    <div>
+      <h1 style="text-align: center;">Ask a Question or Send Us Feedback</h1>
+    </div>
+    <form id="contact" action="" method="POST" class="section contact" enctype="multipart/form-data">
+      <div class="modal-body">
+
+        <div class="reqiured-tit">
+          <div class="row">
+            <div class="col-md-6">
+              <label for="Add Post Title">Name</label>
+              <input type="text" class="form-control" style="background-color: #f9f9f9;height: 45px;" id="Post Title" name="name" value="<?= $wo['user']['first_name']." ".$wo['user']['last_name'] ?>" placeholder="Name" />
+            </div>
+            <div class="col-md-6">
+              <label for="Add Post Title">Email</label>
+              <input name="email" id="" style="background-color: #f9f9f9;height: 45px;" type="email" class="form-control" value="<?= $wo['user']['email'] ?>" placeholder="Email">
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <label for="Add Post Title">Select Your Feedback Type</label>
+                <select name="query_type" id="select" class="form-control" class="common" style="background-color: #f9f9f9;height: 45px;">
+                  <option value="0">Question</option>
+                  <option value="1">Feedback</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+              <label for="Add Post Title">Select Your image</label>
+             <input class="form-control" type="file" name="image" onchange="document.getElementById('feedback-img').src = window.URL.createObjectURL(this.files[0])">
+
+              </div>
+              <div class="col-md-3 " style="padding-top: 10px;">
+                <img id="feedback-img" alt="your image" width="80" height="75" style="border-radius: 5px;"/>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <label for="Add Post Title" id="dis">Question Description</label>
+              <textarea name="description" class="form-control" style="background-color: #f9f9f9;height:95px;margin-bottom:1.5rem;"><?= $description ?></textarea>
+            </div>
+          </div>
+
+        </div>
+        <button class="btn-post" name="submit" type="submit">Submit</button>
+      </div>
+    </form>
+  </div>
+</div>
+<script>
+  $(document).ready(function() {
+    $('select').on('change', function() {
+      select = this.value;
+      if (select == "0") {
+        $('#dis').text("Question Description");
+      } else {
+        $('#dis').text("Feedback Description");
+      }
+
+      // alert(select);
+
+    });
+  });
+</script>

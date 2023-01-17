@@ -1,0 +1,334 @@
+<?php
+global $site_url, $wo;
+// print_r($wo['user']);die;
+$accestoken = Wo_access_token($wo['user']['id']);
+$post_data = array(
+    "server_key" => $wo['config']['widnows_app_api_key']
+);
+$api_url = "api/list-user-interest?access_token=" . $accestoken;
+$interest_show_data_response = invokeApi('POST', $api_url, $post_data);
+$user_interest_list = $interest_show_data_response['data']['data']['interest_data'];
+$user_interest_id_and_data = $interest_show_data_response['data']['data']['user_interest'];
+
+if (isset($_POST['submit'])) {
+
+    $title = Wo_Secure($_POST['title']);
+    if (isset($_POST['city'])) {
+        $city  = $_POST['city'];
+    } else {
+        $city = "0";
+    }
+    if (isset($_POST['interest_id']) && (!empty($_POST['interest_id']))) {
+        $interest_idss = $_POST['interest_id'];
+    } else {
+        $interest_idss = array('0' => '78');
+    }
+    $interest_idss = implode(',', $interest_idss);
+    $description = Wo_Secure($_POST['description']);
+
+    if (isset($_POST["rad"])) {
+        if ($_POST["rad"] == "image") {
+            if (!empty($_FILES['image']['name'])) {
+                $image = new CURLFile($_FILES['image']['tmp_name'], $_FILES['image']['type'], $_FILES['image']['name']);
+                $image_media = $_FILES['image']['name'];
+            }
+            $media_type = "0";
+        } else if ($_POST["rad"] == "audio") {
+            if (!empty($_FILES['audio']['name'])) {
+                $image = new CURLFile($_FILES['audio']['tmp_name'], $_FILES['audio']['type'], $_FILES['audio']['name']);
+                $image_media = $_FILES['audio']['name'];
+            }
+            $media_type = "1";
+        }
+    }
+    $post_data = array(
+
+        "media" => $image,
+        "post_title" => $title,
+        "post_describtions" => $description,
+        "interest_ids" => $interest_idss,
+        "location" => $city,
+        "media_name" => $image_media,
+        "server_key" => $wo['config']['widnows_app_api_key'],
+        "media_type" => $media_type
+
+    );
+    $api_url = "api/create-knkt-post?access_token=" . $accestoken;
+    $response = invokeApi('POST', $api_url, $post_data);
+    if ($response['httpCode'] == 200) {
+        $post_id = $response['data']['data']['post_id'];
+        header("Location: " . Wo_Link('index.php?link1=edit_post&post_id=' . $post_id . '&page_type=view'));
+    }
+}
+?>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/js/all.min.js" integrity="sha512-naukR7I+Nk6gp7p5TMA4ycgfxaZBJ7MO5iC3Fp6ySQyKFHOGfpkSZkYVWV5R7u7cfAicxanwYQ5D1e17EfJcMA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.2.0/fonts/remixicon.css" rel="stylesheet">
+<div class="main-wrap">
+    <div class="main-header">
+        <div style="width: 50%;" id="error_message"></div>
+        <h1>Discover Great Places in New York</h1>
+        <h3>Let's Uncover the best places to eat,drink and shop nearest to your</h3>
+        <div class="inp-dropdown">
+            <div class="input-and-select">
+                <input class="interest" style="border-top-left-radius: 5px;border-bottom-left-radius: 5px;" type="text" name="question" id="question" placeholder="What are you looking for?" />
+                <input class="city" style="border-left: 1px solid gray;" type="text" name="city" id="city" placeholder="City">
+            </div>
+            <div class="butt"> <button class="blue"><i class="fa-solid fa-magnifying-glass"></i>Search</button></div>
+        </div>
+
+        <button class="btn btn-primary btn-lg btn2" data-toggle="modal" data-target="#myModal">
+            Want to Make a Knktn
+        </button>
+
+
+    </div>
+</div>
+
+<div class="main-cata">
+    <div class="cata-wrap">
+        <h1>Browse Categeries</h1>
+        <span class="border"> </span>
+        <!-- Gallery -->
+        <div id="setMainDiv">
+            <?php
+            foreach ($user_interest_list as $user_interest) { ?>
+                <div id="flexbox1">
+                    <div class="column1">
+                        <a href="<?php echo $site_url . "/index.php?link1=knkt_post&interest_id=" . $user_interest['id'] ?>">
+                            <img id="setimg" src="<?php echo $site_url . '/' . $user_interest['image'] ?>" alt="Image" />
+                            <h3><?php echo $user_interest['name'] . " " ?>(<?php echo $user_interest['post_count'] ?>)</h3>
+                        </a>
+
+                    </div>
+                </div>
+            <?php } ?>
+        </div>
+        <div class="btn-show-all"><a style="color: white; text-decoration: none;" href="<?php echo $site_url . '/index.php?link1=edit_interest&user_id=' . $wo['user']['id']; ?> "><button> Show All</button></a></div>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade " id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h1 class="modal-title" id="myModalLabel">Create a Knktn</h1>
+            </div>
+            <form id="contact" action="" method="POST" class="section contact" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="profile-pic">
+                        <div class="profile-pic-image">
+                            <img src="<?php echo $wo['user']['avatar'] ?>" />
+                        </div>
+                        <div class="profile-pic-name">
+                            <h3><?php echo $wo['user']['first_name'] . " " . $wo['user']['last_name'] ?> </h3>
+                        </div>
+                    </div>
+                    <div class="reqiured-tit">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="Add Post Title">Add Post Title *</label>
+                                <input type="text" class="form-control" style="background-color: #f9f9f9;height: 45px;" id="Post Title" name="title" placeholder="Post Title" required />
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="Add Post Title">City, State, or Zip Code</label>
+                                <input name="city" id="searchTextField" style="background-color: #f9f9f9;height: 45px;" type="text" class="form-control" placeholder="<?php echo $wo['lang']['maps_placeholder'] ?>">
+
+
+                            </div>
+                            <div class="col-md-12">
+                                <label for="Add Post Title">Choose up to 5 Categeries (Optional)</label>
+                                <select id="choices-multiple-remove-button" placeholder="Select upto 5 Categeries" name="interest_id[]" multiple>
+                                    <?php foreach ($user_interest_id_and_data as $user_interest) { ?>
+                                        <option value="<?php echo $user_interest['interest_id'] ?>"><?php echo $user_interest['name'] ?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <label for="Add Post Title">Add Post Discription </label>
+                            <div class="container" style="width:100%">
+                                <textarea class="form-control" style="background-color: #f9f9f9;height: 95px;" name="description" class="mb-lg-8"></textarea>
+                            </div>
+                        </div>
+                        <div class="radois">
+                            <div class="rad-1">
+                                <input type="radio" name="rad" checked id="1" placeholder="" value="image">
+                                <span>Image</span>
+                            </div>
+
+                            <div class="rad-2">
+                                <input type="radio" name="rad" id="2" value="audio" class="input">
+                                <span>Audio</span>
+
+                            </div>
+                        </div>
+                        <div class="choose-file">
+                            <div class="upload">
+                                <button type="button" class="btn-file" id="remove-audio">
+                                    <div id="remove-audio-img">
+                                        <i class="ri-image-line"></i> <br>
+                                        <span class="span-file">Add image</span>
+                                    </div>
+                                    <input type="file" accept="image/*" name="image" onchange="readURL(this);" accept="">
+                                    <img class="add-img-media" id="blah" src="" />
+
+
+                                </button>
+                                <button type="button" class="btn-file" id="remove-img">
+                                    <div id="head-phone">
+                                        <i class="ri-headphone-fill"></i>
+                                        <br>
+                                        <span class="span-file">Add audio</span>
+                                    </div>
+                                    <input type="file" id="input" name="audio" accept="audio" onchange="playFile(this)" />
+                                    <audio style="z-index: 999;" id="sound"></audio>
+                                </button>
+                            </div>
+
+                        </div>
+
+                        <div>
+                            <input type="checkbox" id="post-check">
+                            <label> The post will automatically be deleted if it has no activity in last 6months.</label>
+
+                        </div>
+
+                        <button class="btn-post" name="submit" type="submit">Post</button>
+                    </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function() {
+
+        // Attach Button click event listener 
+        $("#myBtn").click(function() {
+            // show Modal
+            $('#myModal').modal('show');
+
+        });
+        var multipleCancelButton = new Choices('#choices-multiple-remove-button', {
+            removeItemButton: true,
+            maxItemCount: 5,
+            searchResultLimit: 5,
+            renderChoiceLimit: 5
+        });
+        $(".blue").click(function() {
+            let question = $('#question').val();
+            let city = $('#city').val();
+            if (question == "") {
+                var error = "What are you looking for is Required";
+                $('#error_message').append(
+                    `<div class="alert text-center alert-danger alert-dismissible " role="alert" style="width:100%;  margin-right:25%;margin-top: 40px; background: #4D91EA;color: white;">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+        ${error}`);
+                return
+            }
+            if (city != "") {
+                city = "&city=" + city;
+            } else {
+                city = "";
+            }
+            window.location.replace(<?php $site_url . "/" ?> "index.php?link1=knkt_post&question=" + question + city);
+        })
+    });
+</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/bbbootstrap/libraries@main/choices.min.css">
+<script src="https://cdn.jsdelivr.net/gh/bbbootstrap/libraries@main/choices.min.js"></script>
+<script>
+    $('input[name="rad"]').on("change", function() {
+        if ($("input:radio[name='rad']").is(':checked')) {
+            let count = $(this).attr("id");
+
+            let x = $(this).val()
+            if (x !== 'image') {
+                $('#remove-img').css('display', 'block');
+                $('#remove-audio').css('display', 'none');
+
+            } else {
+                $('#remove-img').css('display', 'none');
+                $('#remove-audio').css('display', 'block');
+            }
+
+
+        }
+    })
+    input.onchange = function() {
+        var sound = document.getElementById('sound');
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            sound.src = this.result;
+            sound.controls = true;
+            $('#head-phone').css('display', 'none');
+            // sound.play();
+        };
+        reader.readAsDataURL(this.files[0]);
+    }
+
+    function readURL(input) {
+
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function(e) {
+                $('#blah')
+                    .attr('src', e.target.result)
+                    .width(550)
+                    .height(200);
+                $('#remove-audio-img').css('display', 'none')
+                // $('#remove-img').css('padding', '20px 0')
+                $('.upload').css('padding', '0px')
+                $('.icon-type').css('display', 'none')
+
+            };
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+
+
+    var pac_input = document.getElementById('searchTextField');
+    (function pacSelectFirst(input) {
+        // store the original event binding function
+        var _addEventListener = (input.addEventListener) ? input.addEventListener : input.attachEvent;
+
+        function addEventListenerWrapper(type, listener) {
+
+            // Simulate a 'down arrow' keypress on hitting 'return' when no pac suggestion is selected,
+            // and then trigger the original listener.
+            if (type == "keydown") {
+                var orig_listener = listener;
+                listener = function(event) {
+                    var suggestion_selected = $(".pac-item-selected").length > 0;
+                    if (event.which == 13 && !suggestion_selected) {
+                        var simulated_downarrow = $.Event("keydown", {
+                            keyCode: 40,
+                            which: 40
+                        });
+                        orig_listener.apply(input, [simulated_downarrow]);
+                    }
+                    orig_listener.apply(input, [event]);
+                };
+            }
+            // add the modified listener
+            _addEventListener.apply(input, [type, listener]);
+        }
+
+        if (input.addEventListener) {
+            input.addEventListener = addEventListenerWrapper;
+        } else if (input.attachEvent) {
+            input.attachEvent = addEventListenerWrapper;
+
+        }
+    })(pac_input);
+
+    $(function() {
+        var autocomplete = new google.maps.places.Autocomplete(pac_input);
+    });
+</script>

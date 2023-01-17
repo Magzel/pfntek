@@ -1,0 +1,69 @@
+<?php if (!empty($wo['album']['photo_album'])) { ?>
+    <?php
+    if (!empty($wo['album']['photo_album']) && $wo['album']['blur'] == 1) { ?>
+        <div class="post-file show_album_<?php echo $wo['album']['id']; ?> blur_multi_images" id="fullsizeimg">
+            <button class='btn btn-main image_blur_btn remover_blur_btn_<?php echo $wo['album']['id']; ?>' onclick='Wo_RemoveBlurAlbum(this,<?php echo $wo['album']['id']; ?>)'><?php echo $wo['lang']['view_image']; ?></button>
+            <img src="<?php echo (Wo_GetMedia($wo['album']['photo_album'][0]['image_org'])) ?>" alt='image' class='image-file pointer image_blur remover_blur_<?php echo $wo['album']['id']; ?>'>
+        </div>
+    <?php }
+    $delete = '';
+    $onhover = '';
+    ?>
+<?php } ?>
+
+
+<div class="modal fade" id="modal-<?php echo $wo['album']['id'] ?>" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" style="z-index: 1025;">
+    <div class="modal-dialog  modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="display: flex; justify-content: space-between;">
+                <h5 class="modal-title" id="exampleModalLongTitle"><?php echo $wo['album']['album_name']; ?></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" style="overflow-x: hidden;">
+                <div class="swiper-container-<?php echo $wo['album']['id'] ?>">
+                    <div class="swiper-wrapper">
+                        <?php
+                        foreach ($wo['album']['photo_album'] as $photo) {
+                            if ($wo['album']['admin'] === true) {
+                                $delete = "<span onclick='Wo_RemoveAlbumImage(" . $photo['post_id'] . "," . $photo['id'] . ");' class='pointer' style='color: white; margin: 4px;'><i class='fa fa-remove'></i></span>";
+                                $onhover = "onmouseover='Wo_ShowDeleteButton(" . $photo['post_id'] . "," . $photo['id'] . ")' onmouseleave='Wo_HideDeleteButton(" . $photo['post_id'] . "," . $photo['id'] . ");'";
+                            }
+                            $multi_image_function = "Wo_OpenAlbumLightBox(" . $photo['id'] . ", 'album');";
+                            if (!empty($photo['parent_id'])) {
+                                $multi_image_function = "Wo_OpenLightBox(" . $photo['parent_id'] . ", 'album');";
+                            }
+                            echo '<div id="image-' . $photo["id"] . '"' . ' data_image_parent="image-' . $photo["parent_id"] . '"' . ' class="swiper-slide" style="background-image:url(' . Wo_GetMedia($photo['image_org']) . ')" ' . $onhover . ' onclick="' . $multi_image_function . '"' . '>' . $delete . '</div>';
+                        }
+                        ?>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function(){
+        var swiper = new Swiper('.swiper-container-<?php echo $wo['album']['id'] ?>', {
+            effect: 'coverflow',
+            grabCursor: true,
+            centeredSlides: true,
+            slidesPerView: 'auto',
+            initialSlide: <?php echo round(count($wo['album']['photo_album']) / 2) - 1 ?>,
+            coverflowEffect: {
+                rotate: 0,
+                stretch: 0,
+                depth: 100,
+                modifier: 5,
+                slideShadows: true,
+            }
+        });
+
+        $('#modal-<?php echo $wo['album']['id'] ?>').on('shown.bs.modal', function(e) {
+     		swiper.update();
+    	});
+    });
+</script>

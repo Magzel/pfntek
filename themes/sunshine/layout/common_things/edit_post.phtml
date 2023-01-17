@@ -1,0 +1,321 @@
+<?php
+global $site_url, $wo;
+$post_id = $_GET['post_id'];
+$page_type = $_GET['page_type'];
+$accestoken = Wo_access_token($wo['user']['id']);
+$post_data = array(
+    "server_key" => $wo['config']['widnows_app_api_key'],
+    "post_id" => $post_id
+);
+// detail api add new post 
+$api_url = "api/detail-knkt-post?access_token=" . $accestoken;
+$interest_show_data_response = invokeApi('POST', $api_url, $post_data);
+$user_interest_list = $interest_show_data_response['data']['data'];
+$interest_list = $user_interest_list['user_post_interest'];
+$post_image = $user_interest_list['images'][0]['media'];
+$media_type = $user_interest_list['images'][0]['media_type'];
+
+// echo $post_image . " " . $media_type;
+// die;
+$post_title = $user_interest_list['post_title'];
+$date = $user_interest_list['date'];
+$post_describtions = html_entity_decode(strip_tags($user_interest_list['post_describtions']));
+
+// list of user interest for multi selector
+$api_url = "api/list-user-interest?access_token=" . $accestoken;
+$interest_show_data_response = invokeApi('POST', $api_url, $post_data);
+$user_interest_list = $interest_show_data_response['data']['data']['interest_data'];
+$user_interest_id_and_data = $interest_show_data_response['data']['data']['user_interest'];
+// edit post data 
+if (isset($_POST['edit'])) {
+    $title = Wo_Secure($_POST['title']);
+    if (isset($_POST['interest_id']) && (!empty($_POST['interest_id']))) {
+        $interest_idss = $_POST['interest_id'];
+    } else {
+        $interest_idss = array('0' => '78');
+    }
+
+    $interest_idss = implode(',', $interest_idss);
+    $description = Wo_Secure($_POST['description']);
+    if (!empty($_FILES['image']['name'])) {
+        $image = new CURLFile($_FILES['image']['tmp_name'], $_FILES['image']['type'], $_FILES['image']['name']);
+        $image_media = $_FILES['image']['name'];
+    }
+    $post_data = array(
+        "media" => $image,
+        "post_title" => $title,
+        "post_describtions" => $description,
+        "interest_ids" => $interest_idss,
+        "location" => "hello",
+        "media_name" => $image_media,
+        "server_key" => $wo['config']['widnows_app_api_key'],
+        "post_id" => $post_id
+
+    );
+    $api_url = "api/edit-knkt-post?access_token=" . $accestoken;
+    $response = invokeApi('POST', $api_url, $post_data);
+    if ($response['httpCode'] == 200) {
+        header("Location: " . Wo_Link('index.php?link1=edit_post&post_id=' . $post_id . '&page_type=view'));
+    }
+}
+// change the status of post 
+if (isset($_POST['submit'])) {
+    $post_data = array(
+        "post_id" => $post_id,
+        "server_key" => $wo['config']['widnows_app_api_key'],
+    );
+    $api_url = "api/edit-status-knkt-post?access_token=" . $accestoken;
+    $response = invokeApi('POST', $api_url, $post_data);
+    if ($response['data']['api_status'] == 200) {
+        header("Location: " . Wo_Link('index.php?link1=knkt_post&interest_id=all'));
+    }
+}
+?>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/js/all.min.js" integrity="sha512-naukR7I+Nk6gp7p5TMA4ycgfxaZBJ7MO5iC3Fp6ySQyKFHOGfpkSZkYVWV5R7u7cfAicxanwYQ5D1e17EfJcMA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.2.0/fonts/remixicon.css" rel="stylesheet">
+<?php if ($page_type == "edit") { ?>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <a href="<?php echo Wo_Link('index.php?link1=knkt_post&interest_id=all') ?>"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button></a>
+                <h1 class="modal-title" id="myModalLabel">Edit a Knktn</h1>
+            </div>
+            <form id="contact" action="" method="POST" class="section contact" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="profile-pic">
+                        <div class="profile-pic-image"><img src="<?php echo $wo['user']['avatar'] ?>" /></div>
+
+
+
+                        <div class="profile-pic-name">
+                            <h1 class="heading-edit"><?php echo $wo['user']['username'] ?> <h1>
+                        </div>
+
+                    </div>
+                    <div class="reqiured-tit">
+                        <div class="row">
+                            <label for="Add Post Title">Edit Post Title</label>
+                            <div class="col-md-12">
+                                <input type="text" class="form-control" style="background-color: #f9f9f9;height: 45px;" id="Post Title" name="title" placeholder="Edit Post Title" value="<?php echo $post_title ?>" required />
+                            </div>
+                            <div class="col-md-12">
+                                <div class="row d-flex justify-content-center mt-100">
+                                    <label for="Add Post Title">Choose up to 5 Categeries (Optional) </label>
+                                    <div class="col-md-12">
+                                        <select id="choices-multiple-remove-button" placeholder="Select upto 5 Categeries" name="interest_id[]" multiple>
+                                            <?php foreach ($user_interest_id_and_data as $user_interest) { ?>
+                                                <option value="<?php echo $user_interest['interest_id'] ?>" <?php foreach ($interest_list as $interest_submit_id) {
+                                                                                                                if ($user_interest['interest_id'] == $interest_submit_id['id']) {
+                                                                                                                    echo 'selected';
+                                                                                                                }
+                                                                                                            } ?>><?php echo $user_interest['name'] ?></option>
+                                            <?php } ?>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label for="Add Post Title">Edit Post Discription </label>
+                            <div class="container" style="width:100%">
+                                <textarea class="form-control" style="background-color: #f9f9f9;height: 95px;" name="description" class="mb-lg-8"><?= $post_describtions ?></textarea>
+                            </div>
+                        </div>
+                        <div class="radois">
+                            <div class="rad-1">
+                                <input type="radio" name="rad" <?php if ($media_type == 0) {
+                                                                    echo 'checked';
+                                                                } ?> id="1" placeholder="" value="image">
+                                <span>Image</span>
+                            </div>
+
+                            <div class="rad-2">
+                                <input type="radio" name="rad" <?php if ($media_type == 1) {
+                                                                    echo 'checked';
+                                                                } ?> id="2" value="audio" class="input">
+                                <span>Audio</span>
+
+                            </div>
+                        </div>
+                        <div class="choose-file">
+                            <div class="upload" style="padding: 0px;">
+                                <button type="button" class="btn-file" id="remove-audio">
+                                    <input type="file" name="image" onchange="readURL(this);">
+
+                                    <?php if ($media_type == "0") { ?>
+                                        <img class="add-img-media" style="width:550px; height:250px" id="blah" src="<?= $site_url . '/' . $post_image ?>" />
+                                    <?php } else { ?>
+                                        <img style="display: none;" class="add-img-mediam q" style="width:550px; height:250px" id="blah" src="" />
+                                        <div id="remove-audio-img">
+                                            <i class="ri-image-line"></i> <br>
+                                            <span class="span-file">Add image</span>
+                                        </div>
+                                    <?php } ?>
+                                </button>
+                                <button type="button" class="btn-file" id="remove-img">
+                                    <input type="file" id="input" accept="audio" onchange="playFile(this)" />
+                                    <?php if ($media_type == "1") { ?>
+                                        <div>
+                                            <audio controls>
+                                                <source src="<?php echo $site_url . '/' . $post_image ?>" type="audio/mpeg">
+                                            </audio>
+                                        </div>
+                                    <?php } else { ?>
+                                        <div id="head-phone">
+                                            <i class="ri-headphone-fill"></i>
+                                            <br>
+                                            <span class="span-file">Add audio</span>
+                                        </div>
+                                        <audio style="z-index: 999;" id="sound"></audio>
+                                    <?php } ?>
+                                </button>
+                            </div>
+
+                        </div>
+                        <button class="btn-post" name="edit" type="submit">Post</button>
+                    </div>
+            </form>
+        </div>
+    </div>
+    </div>
+<?php } else { ?>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <a href="<?php echo $site_url ?>/index.php?link1=edit_post&post_id=<?php echo $post_id ?>&page_type=edit" class="glyphicon glyphicon-pencil edit-butn-style"></a>
+                <h1 class="modal-title" id="myModalLabel">Post View</h1>
+            </div>
+            <form id="contact" action="" method="POST" class="section contact" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="row">
+
+                        <div class="profile-pic">
+                            <div class="profile-pic-image"> <img src="<?= $wo['user']['avatar'] ?>" /></div>
+                            <div class="profile-pic-name">
+                                <p style="font-weight: bold;"><?php echo $post_title ?>
+                                <p>
+                                <h4 style="font-weight: bold;">@<?php echo $wo['user']['username'] ?><h4>
+                                        <h4 style="font-weight: bold;"><?php echo $date ?><h4>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div style="display: flex; margin-top:20px">
+                                <?php foreach ($interest_list as $interest_name) { ?>
+                                    <p style="padding-left: 9px; color: blue"><?= "#" . $interest_name['name'] ?></p>
+                                <?php } ?>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="reqiured-tit">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h5 style="font-weight: bold;">Post Description</h5>
+                                <p><?php echo $post_describtions ?></p>
+                            </div>
+                        </div>
+                        <?php
+                        if (!empty($post_image) && $media_type == "0") { ?>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <h5 style="font-weight: bold;">Post Image</h5>
+                                    <div>
+
+                                        <img style="width: 100%;margin-bottom: 30px;height: 50vh;
+                                            object-fit: cover;" src="<?php echo $site_url . '/' . $post_image ?>" alt="POST IMAGE">
+                                    </div>
+                                </div>
+                            </div>
+                        <?php } else if ($media_type == "1") { ?>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <h5 style="font-weight: bold;">Post Audio</h5>
+
+                                    <div>
+                                        <audio controls>
+                                            <source src="<?php echo $site_url . '/' . $post_image ?>" type="audio/mpeg">
+                                        </audio>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php  } else {
+                        } ?>
+
+                        <button class="btn-post" name="submit" type="submit">Post Knktn</button>
+                    </div>
+            </form>
+        </div>
+    </div>
+<?php } ?>
+<script>
+    //multiselect
+    $(document).ready(function() {
+
+        var multipleCancelButton = new Choices('#choices-multiple-remove-button', {
+            removeItemButton: true,
+            maxItemCount: 5,
+            searchResultLimit: 5,
+            renderChoiceLimit: 5
+        });
+
+        $('input[name="rad"]').on("change", function() {
+            if ($("input:radio[name='rad']").is(':checked')) {
+                let count = $(this).attr("id");
+
+                let x = $(this).val()
+                if (x !== 'image') {
+                    $('#remove-img').css('display', 'block');
+                    $('#remove-audio').css('display', 'none');
+
+                } else {
+                    $('#remove-img').css('display', 'none');
+                    $('#remove-audio').css('display', 'block');
+                }
+
+
+            }
+        })
+
+    });
+
+    input.onchange = function() {
+        var sound = document.getElementById('sound');
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            sound.src = this.result;
+            sound.controls = true;
+            $('#head-phone').css('display', 'none');
+            // sound.play();
+        };
+        reader.readAsDataURL(this.files[0]);
+    }
+
+    function readURL(input) {
+
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function(e) {
+                $('#blah')
+                    .attr('src', e.target.result)
+                    .width(550)
+                    .height(250);
+                $('#blah').css('display', 'block')
+                $('#remove-audio').css('display', 'block');
+                $('#remove-audio-img').css('display', 'none')
+                $('.upload').css('padding', '0px')
+                $('.icon-type').css('display', 'none')
+
+            };
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/bbbootstrap/libraries@main/choices.min.css">
+<script src="https://cdn.jsdelivr.net/gh/bbbootstrap/libraries@main/choices.min.js"></script>

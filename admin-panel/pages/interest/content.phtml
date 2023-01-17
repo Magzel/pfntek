@@ -1,0 +1,199 @@
+<?php
+global $sqlConnect;
+global $site_url;
+$error = "";
+if (isset($_POST['submit'])) {
+    $title = Wo_Secure($_POST['title']);
+    $status = Wo_Secure($_POST['status']);
+    if (empty($title)) {
+        $error = 'Name is required. ';
+    } else if (empty($image)) {
+        $error = 'Image is required. ';
+    }
+    if (!empty($_FILES['image']['name'])) {
+        //Making directory if not exist
+        $expanse_file_upload_directory    = 'upload/photos';
+        $expanse_file_dir = '';
+        if (!is_dir($expanse_file_dir . $expanse_file_upload_directory)) {
+            mkdir($expanse_file_dir . $expanse_file_upload_directory, 0777, true);
+        }
+        $task_file_replace =  str_replace(" ", "_", $_FILES['image']["name"]);
+        $task_file_name = "upload/photos/" . date('YmdHis_') . "--" . $task_file_replace;
+        //Moving file to the folder
+        $test = move_uploaded_file($_FILES['image']['tmp_name'], $expanse_file_dir . $task_file_name);
+    }
+    // =======>insert Interest <=====
+    $add_interest = "INSERT INTO `wo_interest`(`name`, `image`,`status`)  VALUES ('$title', '$task_file_name','$status')";
+    $add_interest_result = mysqli_query($sqlConnect, $add_interest);
+}
+// delete daily report single record
+if (isset($_GET['action']) and $_GET['action'] == 'delete') {
+    $interest_id = $_GET['interest_id'];
+    // =====> calling api to delete daily report <=====
+    $delete_interest_query = "DELETE FROM `wo_interest` WHERE id=$interest_id";
+    $delete_interest_result = mysqli_query($sqlConnect, $delete_interest_query);
+}
+
+$interest_info = get_list($sqlConnect, "wo_interest");
+$interest_info_result = $interest_info['get_info'];
+
+?>
+<div class="container-fluid">
+    <h3>Knkt Interest</h3>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="#">Home</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Knkt Interest</li>
+        </ol>
+    </nav>
+    <div class="col-md-12">
+        <!-- <label>&nbsp;</label> -->
+        <button id="myBtn" class="btn btn-info" style="position: absolute;
+    right: 1px;
+    bottom: 13px;">Add Interest</button>
+    </div>
+
+</div>
+<div class="clearfix"></div>
+<div class="table-responsive1">
+    <!-- <table class="table table-bordered table-striped table-hover"> -->
+    <table id="example" class="table table-striped table-bordered" style="width:100%">
+        <thead>
+            <tr>
+
+                <th>ID</th>
+                <th>Interest</th>
+                <th>Image</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php
+            $count=1;
+            foreach ($interest_info_result as $interest_info) { ?>
+                <tr>
+                    <td><?php echo $count; ?></td>
+                    <td><?php echo $interest_info['name']; ?></td>
+                    <td><img src="<?php echo $site_url.'/'.$interest_info['image']; ?>" alt="Nature" width="50" height="50"></td>
+                    <?php if ($interest_info['status'] == 1) { ?>
+                        <td>
+                            <div class="badge outline-badge-success">Active
+                            </div>
+                        </td>
+                    <?php }
+                    if ($interest_info['status'] == 0) { ?>
+                        <td>
+                            <div class="badge outline-badge-danger">Inactive
+                            </div>
+                        </td>
+                    <?php } ?>
+                    <td>
+                        <div class="dropdown" style="display: inline;">
+                            <svg style="cursor: pointer;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-sliders dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                                <line x1="4" y1="21" x2="4" y2="14"></line>
+                                <line x1="4" y1="10" x2="4" y2="3"></line>
+                                <line x1="12" y1="21" x2="12" y2="12"></line>
+                                <line x1="12" y1="8" x2="12" y2="3"></line>
+                                <line x1="20" y1="21" x2="20" y2="16"></line>
+                                <line x1="20" y1="12" x2="20" y2="3"></line>
+                                <line x1="1" y1="14" x2="7" y2="14"></line>
+                                <line x1="9" y1="8" x2="15" y2="8"></line>
+                                <line x1="17" y1="16" x2="23" y2="16"></line>
+                            </svg>
+                            <div class="dropdown-menu dropdown-menu-right" role="menu">
+                                <!-- <a class="dropdown-item" href="edit?interest_id=<?= $interest_info['id']; ?>">Edit</a> -->
+                                <a class="dropdown-item" href='<?php echo Wo_LoadAdminLinkSettings("edit-interest?interest_id=" . $interest_info['id']) ?>'>Edit</a>
+
+                                <a class="dropdown-item" href="interest?interest_id=<?= $interest_info['id']; ?>&action=delete" onclick="return confirm('Are you sure you want to delete this Interest?')">Delete</a>
+
+
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            <?php $count++; }
+            ?>
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header" style="padding: 35px 50px;background-color:#30befb">
+                <button type="button" class="close" data-dismiss="modal">
+                    &times;
+                </button>
+                <h4><span class=""></span>Add Interest </h4>
+            </div>
+            <div class="modal-body" style="padding: 40px 50px">
+                <!-- Form  for data -->
+                <form id="contact" action="" method="POST" class="section contact" enctype="multipart/form-data">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="usrname"><span class="glyphicon glyphicon-user"></span> Name</label>
+                                <input type="text" class="form-control" id="name" name="title" placeholder="Name" required />
+                            </div>
+
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="image">Image </label>
+                                <input type="file" class="form-control mb-4" id="image" placeholder="image" value="" name="image" required accept="image/*">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="status">Status</label>
+                                <select name="status" id="status" class="form-control mb-4">
+                                    <option value="1">Active</option>
+                                    <option value="0">Inactive</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <button type="submit" name="submit" class="col-md-12 btn btn-info mt-4">
+                                <span class="glyphicon glyphicon-off"></span> Save
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- For Pop UP form -->
+
+<div class="modal fade" id="SelectedDeleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModal1Label" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModal1Label">Delete users?</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure that you want to remove the selected user(s)?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="DeleteSelected()" data-dismiss="modal">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function() {
+        $("#myBtn").click(function() {
+            $("#myModal").modal();
+        });
+        $('#example').DataTable();
+    });
+</script>

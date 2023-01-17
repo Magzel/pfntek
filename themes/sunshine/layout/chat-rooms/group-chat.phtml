@@ -1,0 +1,334 @@
+<?php
+global $site_url, $wo;
+if (isset($_GET['group_id'])) {
+    $group_id = $_GET['group_id'];
+}
+// group detal api hitting 
+$accestoken = Wo_access_token($wo['user']['id']);
+$api_url = "api/detail-groups?access_token=" . $accestoken;
+$post_data = array(
+    "server_key" => $wo['config']['widnows_app_api_key'],
+    'group_id' => $group_id
+);
+$group_detail_response = invokeApi('POST', $api_url, $post_data);
+$group_detail_result = $group_detail_response['data']['data'];
+// group list api hitting 
+$accestoken = Wo_access_token($wo['user']['id']);
+$api_url = "api/user_group_list?access_token=" . $accestoken;
+$post_data = array(
+    "server_key" => $wo['config']['widnows_app_api_key'],
+    'user_id' => $wo['user']['id']
+);
+$group_list_response = invokeApi('POST', $api_url, $post_data);
+$group_list_result = $group_list_response['data']['data'];
+// group message api hitting 
+$accestoken = Wo_access_token($wo['user']['id']);
+$api_url = 'api/list-group-message?access_token=' . $accestoken;
+$post_data = array(
+    'server_key' => $wo['config']['widnows_app_api_key'],
+    'group_id' => $group_id,
+);
+$group_chat_list_response = invokeApi('POST', $api_url, $post_data);
+$chat_data = $group_chat_list_response['data']['data'];
+?>
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.2.0/fonts/remixicon.css" rel="stylesheet">
+<div class="container cont" style="width: 90%;">
+    <div class="leftSide lt">
+        <!-- Header -->
+        <div style="display:flex">
+            <div class="nav-search">
+                <div class="arrow">
+                    <a class="" href="<?php echo Wo_Link('index.php?link1=chat-rooms') ?>">
+                        <ion-icon name="arrow-back-outline"></ion-icon>
+                    </a>
+                </div>
+                <div class="search_chat">
+                    <ion-icon class="search-name" name="search-outline"></ion-icon>
+                    <input type="text" placeholder="Search or Start new chat">
+                </div>
+
+            </div>
+        </div>
+
+        <!-- CHAT LIST -->
+        <div class="chatlist ">
+            <?php foreach ($group_list_result as $group) { ?>
+                <div class="block" <?php if ($group['id'] == $group_id) { ?> style="background-color: #f0f2f5;" <?php } ?> id="<?php echo $group['id'] ?>">
+                    <div class="chat-block-title">
+                        <div class="imgBox">
+                            <img src="<?php echo $group['profile_image'] ?>" class="cover" alt="">
+                        </div>
+                        <div class="para-name">
+                            <p><?php echo $group['name'] ?></p>
+                            <?php if ($group['last_message']['user_name']) { ?>
+                                <div class="group-span-chat">
+                                    <span><?php echo $group['last_message']['user_name'] ?>:<?php echo $group['last_message']['message'] ?></span>
+                                </div>
+                            <?php } ?>
+                        </div>
+                    </div>
+                    <div class="group-btn-right">
+                        <small class="time-group"> <?php echo $group['last_message']['time'] ?></small>
+                    </div>
+                </div>
+            <?php } ?>
+        </div>
+    </div>
+
+
+    <div class="rightSide">
+        <div class="header">
+            <div class="imgText">
+                <div class="userimg">
+                    <img src="<?php echo $site_url . '/' . $group_detail_result['profile_image'] ?>" alt="" class="cover">
+                </div>
+                <div class="userchat">
+                    <span><?php echo $group_detail_result['name'] ?></span> <span><?php echo $group_detail_result['short_discription'] ?></span>
+                </div>
+            </div>
+            <span class="dropdown   icon-burger">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                    <ion-icon name="ellipsis-vertical" style="font-size: 20px;"></ion-icon>
+
+                </a>
+                <ul class="dropdown-menu post-privacy-menu post-options" role="menu">
+                    <li>
+                        <a href="#">Search</a>
+                    </li>
+                    <li>
+                        <a href="#">Clear Chat</a>
+                    </li>
+                    <li>
+                        <a href="#">Leave Room</a>
+                    </li>
+                    <li>
+                        <a href="#">Report</a>
+                    </li>
+                </ul>
+            </span>
+
+        </div>
+        <!-- CHAT-BOX -->
+        <div class="chatbox">
+            <?php foreach ($chat_data as $message) {
+                if ($message['sender_id'] != $wo['user']['id']) { ?>
+                    <div style='display: flex;flex-direction:row;gap:3px; '>
+                        <div style='display: flex;'>
+                            <div class='sending-msg' style='width:100%;display: flex; flex-direction:row;  align-items: flex-start'>
+                                <div style='display:flex' id='lblTime'>
+                                    <div class='user-inbox1 inbox'>
+                                        <div class='userimges'>
+                                            <img src='<?php echo $message['sender_image'] ?>' alt='' class='cover'>
+                                        </div>
+                                        <div class='msg-header1 '>
+                                            <div class='upper'><a href="<?php echo $site_url ?>messages/<?php echo $message['sender_id'] ?>"><small><?= $message['user_name'] ?></small></a>
+                                                <span class='dropdown   icon-burger'>
+                                                    <?php if ($message['admin_id'] == $wo['user']['user_id']) { ?>
+                                                        <a href='#' class='dropdown-toggle' data-toggle='dropdown' role='button' aria-expanded='false'> <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-three-dots' viewBox='0 0 16 16'>
+                                                                <path d='M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z' />
+                                                            </svg>
+                                                        </a>
+                                                    <?php } ?>
+                                                    <ul class='dropdown-menu post-privacy-menu post-options' role='menu'>
+                                                        <li> <a href='#'>Delete For Everyone</a></li>
+                                                    </ul>
+                                                </span>
+                                            </div>
+                                            <?php if ($message['message_image'] && empty($message['message'])) { ?>
+                                                <img style="width: 134px;" src="<?php echo $site_url . '/' . $message['message_image'] ?>" alt=""><small class='time-append'><?= $message['time'] ?></small>
+                                            <?php  } else if ($message['message_image'] && $message['message']) {
+                                            ?>
+                                                <img style="width: 134px;" src="<?php echo $site_url . '/' . $message['message_image'] ?>" alt="">
+                                                <p><?= $message['message'] ?> <small class='time-append'><?= $message['time'] ?></small></p>
+                                            <?php } else if ($message['message']) { ?>
+                                                <p><?= $message['message'] ?> <small class='time-append'><?= $message['time'] ?></small></p>
+                                            <?php } ?>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                <?php } else { ?>
+
+                    <div style='display: flex;flex-direction:column;gap:3px; '>
+                        <div style='display: flex;'>
+                            <div class='sending-msg' style='width:100%;display: flex; flex-direction:column;  align-items: flex-end'>
+                                <div style='display:flex' id='lblTime'>
+                                    <div class='user-inbox inbox'>
+                                        <div class='msg-header '>
+                                            <div class='upper'><small><?= $message['user_name'] ?></small>
+
+                                                <span class='dropdown   icon-burger'>
+                                                    <?php if ($message['admin_id'] == $wo['user']['user_id']) { ?>
+                                                        <a href='#' class='dropdown-toggle' data-toggle='dropdown' role='button' aria-expanded='false'> <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-three-dots' viewBox='0 0 16 16'>
+                                                                <path d='M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z' />
+                                                            </svg>
+                                                        </a>
+                                                    <?php } ?>
+                                                    <ul class='dropdown-menu post-privacy-menu post-options' role='menu'>
+                                                        <li> <a href='#'>Delete For Everyone</a></li>
+                                                    </ul>
+                                                </span>
+                                            </div>
+                                            <?php if ($message['message_image'] && empty($message['message'])) { ?>
+                                                <img style="width: 134px;" src="<?php echo $site_url . '/' . $message['message_image'] ?>" alt=""><small class='time-append'><?= $message['time'] ?></small>
+                                            <?php  } else if ($message['message_image'] && $message['message']) {
+                                            ?>
+                                                <img style="width: 134px;" src="<?php echo $site_url . '/' . $message['message_image'] ?>" alt="">
+                                                <p><?= $message['message'] ?> <small class='time-append'><?= $message['time'] ?></small></p>
+                                            <?php } else if ($message['message']) { ?>
+                                                <p><?= $message['message'] ?> <small class='time-append'><?= $message['time'] ?></small></p>
+                                            <?php } ?>
+                                        </div>
+                                    </div>
+                                    <div class='userimges'><img src='<?php echo $message['sender_image'] ?>' alt='' class='cover'> </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+            <?php
+                }
+            } ?>
+
+            <div id="sending-id">
+            </div>
+       
+        </div>
+
+
+
+        <!-- CHAT INPUT -->
+
+
+        <div class="chat_input">
+            <div class="userimg-input">
+                <img src="<?php echo $wo['user']['avatar'] ?>" alt="" class="cover">
+            </div>
+
+            <input id="data" type="text" placeholder="Type something here.." required>
+
+            <!-- <ion-icon name="happy-outline" class="icon-end"></ion-icon>
+
+            <ion-icon name="attach" class="icon-end"></ion-icon> -->
+           
+
+
+         <!-- <div class="image-upload img-attech_send">  -->
+    
+            <!-- <label for="file-input">
+                    <img class="imga" src="<?php echo $site_url ?>/themes/sunshine/img/simage.png" />
+                </label>   -->
+                <!-- <input id="myInput" type="file" style="visibility:hidden" accept="image/x-png,image/gif,image/jpeg"/>
+
+               <p title="attach file" class="attachFileSpan" onclick="document.getElementById('myInput').click()">
+                <i class="fa fa-file-image-o"></i>
+        </p> -->
+                <!-- <input id="file-input" type="file" accept="image/x-png,image/gif,image/jpeg" />  -->
+            <!-- </div> -->
+            <input type="hidden" id='get_group_id' value="<?= $group_id ?>">
+            <input type="hidden" id='get_user_name' value="<?= '@' . $wo['user']['first_name'] ?>">
+            <input type="hidden" id='get_image' value="<?= $wo['user']['avatar'] ?>">
+            <div id="loader" class="hide"><img style="width: 40px;" src="<?php echo $site_url ?>/themes/sunshine/img/icons/Spin.gif" alt="shit"></div>
+            <div id="send-btn">
+                <ion-icon name="send" class="icon-end" style=" color: #4d91ea;"></ion-icon>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+<script>
+    $(document).ready(function() {
+        $("#send-btn").on("click", function(e) {
+            var formData = new FormData();
+            var value = $("#data").val();
+            var image = $('#file-input')[0].files;
+            var dt = new Date();
+            var group_id = $('#get_group_id').val();
+            var user_name = $('#get_user_name').val();
+            var get_image = $('#get_image').val();
+            var time = dt.toLocaleString('en-US', {
+                hour: 'numeric',
+                minute: 'numeric',
+                hour12: true
+            })
+            formData.append('group_id', group_id)
+            formData.append('message', value)
+            formData.append('time', time)
+            formData.append('get_image', get_image)
+            jQuery.each(jQuery('#file-input')[0].files, function(i, file) {
+                formData.append('message_image', file);
+            });
+            // formData.append('', image)
+            var msg = `
+                        <div id="" style="display: flex;">
+                        <div class="sending-msg" style="width:100%;display: flex; flex-direction:column;  align-items: flex-end">
+                        <div style="display:flex" id="lblTime"><div class="user-inbox inbox"><div class="msg-header " ><div class="upper"><small>${user_name}</small><span class="dropdown   icon-burger"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"> <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16"> <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z" /></svg>  </a><ul class="dropdown-menu post-privacy-menu post-options" role="menu"><li> <a href="#">Delete For Me </a></li>  <li>  <a href="#">Delete For Everyone</a></li></div><p>${value}<small class="time-append">${time}</small></p>  </div></div><div class="userimges"><img src="${get_image}" alt="" class="cover"> </div></div></div></div>`;
+            $("#sending-id").append(msg);
+            $.ajax({
+                url: "index.php?link1=add_chat",
+                dataType: 'text',
+                type: "POST",
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function(data) {
+                    data = JSON.parse(data);
+                    console.log(data.api_status);
+                    if (data.api_status == '200') {
+                        $("#data").val('');
+                        setTimeout(function() {
+                            $('#loader').removeClass('hide')
+                            $("#send-btn").css('display', 'none')
+                        }, 1000)
+
+                    }
+                }
+
+            });
+
+        });
+        $(".block").click(function() {
+            var group_id = $(this).attr('id');
+            window.location.replace(<?php $site_url . "/" ?> `index.php?link1=group-chat&group_id=${group_id}`);
+        });
+    });
+    setInterval(function() {
+        var group_id = $('#get_group_id').val();
+        $.ajax({
+            url: "index.php?link1=reload-chat-list",
+            type: "POST",
+            data: {
+                'group_id': group_id,
+            },
+            dataType: "text",
+            success: function(data) {
+                $(".chatbox").html(data);
+            }
+        });
+        $('#loader').addClass('hide')
+        $("#send-btn").css('display', 'block')
+    }, 1000);
+
+    $(window).resize(function() {
+
+        if ($(window).width() <= 540) {
+
+            $('.rightSide').css('display', 'none');
+            $('.lt').css('margin-top', '5rem');
+            $('.block').on('click', function() {
+                $('.rightSide').css('display', 'block');
+                $('.lt').css('display', 'none');
+            })
+
+        }
+
+    });
+
+
+</script>

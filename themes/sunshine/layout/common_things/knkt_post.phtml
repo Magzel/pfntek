@@ -1,0 +1,629 @@
+<?php
+global $site_url, $wo;
+$username = $wo['user']['username'];
+$user_image = $wo['user']['avatar'];
+$interest_id = $_GET['interest_id'];
+$accestoken = Wo_access_token($wo['user']['id']);
+if (isset($_GET['action']) and $_GET['action'] == 'delete') {
+    $post_id = $_GET['post_id'];
+    $api_url = "api/delete-knkt-post?access_token=" . $accestoken;
+    $post_data = array(
+        "server_key" => $wo['config']['widnows_app_api_key'],
+        'post_id' => $post_id
+    );
+    $post_delete_data = invokeApi('POST', $api_url, $post_data);
+    if ($post_delete_data['httpCode'] == 200) {
+        $success = $post_delete_data['data']['message'];
+        header("Location: " . Wo_Link('index.php?link1=knkt_post&interest_id=all'));
+    } else {
+        $error = "some thing went wrong";
+    }
+}
+
+// post share 
+if (isset($_GET['action']) && $_GET['action'] == 'share') {
+    $post_id = $_GET['post_id'];
+    $post_data = array(
+        "server_key" => $wo['config']['widnows_app_api_key'],
+        'post_id' => $post_id
+    );
+    $api_url = "api/knkt-create-share-post?access_token=" . $accestoken;
+    $share_post_data = invokeApi('POST', $api_url, $post_data);
+    if ($share_post_data['data']['api_status']) {
+        header("Location: " . Wo_Link('index.php?link1=knkt_post&interest_id=' . $interest_id));
+    }
+}
+// post interest list
+if (isset($_POST['recent'])) {
+    $recent = "recent";
+    $post_data = array(
+        "server_key" => $wo['config']['widnows_app_api_key'],
+        'post_type' => $recent
+    );
+} else if (isset($_POST['popular'])) {
+    $popular = "popular";
+    $post_data = array(
+        "server_key" => $wo['config']['widnows_app_api_key'],
+        'post_type' => $popular
+    );
+} else if (isset($_POST['all'])) {
+    $post_data = array(
+        "server_key" => $wo['config']['widnows_app_api_key'],
+        'post_type' => "all"
+    );
+} else if (isset($_GET['question'])) {
+    $question = $_GET['question'];
+    $city = $_GET['city'];
+    $post_data = array(
+        "server_key" => $wo['config']['widnows_app_api_key'],
+        'question' => $question,
+        'city' => $city
+    );
+} else {
+    $post_data = array(
+        "server_key" => $wo['config']['widnows_app_api_key'],
+        'post_type' => $interest_id
+    );
+}
+$api_url = "api/knkt-post-list?access_token=" . $accestoken;
+$post_list_data = invokeApi('POST', $api_url, $post_data);
+$post_list = $post_list_data['data']['data'];
+$currentUrl = $_SERVER['REQUEST_URI'];
+// echo $currentUrl;
+?>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/js/all.min.js" integrity="sha512-naukR7I+Nk6gp7p5TMA4ycgfxaZBJ7MO5iC3Fp6ySQyKFHOGfpkSZkYVWV5R7u7cfAicxanwYQ5D1e17EfJcMA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.2.0/fonts/remixicon.css" rel="stylesheet">
+<div class="col-md-2 leftcol"><?php echo Wo_LoadPage("sidebar/left-sidebar"); ?></div>
+<!-- <div class="col-md-2" id="right-aside">
+    <?php
+    $users = Wo_UserSug(5);
+    if (count($users) != 0) {
+    ?>
+        <ul class="list-group" id="sidebar-user-list-container">
+            <li class="text-muted sidebar-title-back" contenteditable="false">
+                <?php echo $wo['lang']['people_you_may_know']; ?>
+                <span onclick="Wo_ReloadSideBarUsers();" class="<?php echo Wo_RightToLeft('pull-right'); ?> refresh"><i class="fa fa-repeat progress-icon" data-icon="repeat"></i></span>
+            </li>
+            <li>
+                <div class="sidebar-users-may-know-container">
+                    <?php
+                    foreach ($users as $wo['UsersList']) {
+                        $wo['UsersList']['user_name'] = mb_substr($wo['UsersList']['name'], 0, 10, "utf-8");
+                        echo Wo_LoadPage('sidebar/sidebar-user-list');
+                    }
+                    ?>
+                </div>
+                <div class="clear"></div>
+            </li>
+        </ul>
+    <?php } ?>
+</div> -->
+
+<div class="post-main">
+    <form id="contact" action="" method="POST" enctype="multipart/form-data">
+
+        <div class="post-top-outer main main-auto-top" id="main-inner-id">
+            <a class="blue-arrow" href="<?php echo $site_url . "/index.php?link1=kntn_catagory" ?>">
+                <i class="ri-arrow-left-line"></i>
+            </a>
+
+
+            <button class="most-recent" type="submit" name="recent">
+                <img src="<?php echo $site_url ?>/themes/sunshine/icons/jpg/recent.jpg" alt="">
+                <p>Most Recent</p>
+            </button>
+            <button class="most-recent" type="submit" name="popular">
+                <img src="<?php echo $site_url ?>/themes/sunshine/icons/jpg/all-post.jpg" alt="">
+                <p>Most Popular</p>
+            </button>
+            <button class="most-recent" type="submit" name="all"> <img src="<?php echo $site_url ?>/themes/sunshine/icons/jpg/all.jpg" alt="">
+                <p>All Post</p>
+            </button>
+
+        </div>
+
+    </form>
+    <?php
+    if ($error != "") {
+    ?>
+        <div class="alert text-center alert-danger alert-dismissible " role="alert" style="width:50%; margin-left:23%; margin-right:25%;margin-top: 40px; background: #4D91EA;color: white;">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+            <?= $error; ?>
+        </div>
+    <?php } else if ($success != "") {
+    ?>
+        <div class="alert text-center alert-danger alert-dismissible " role="alert" style="width:50%; margin-left:23%; margin-right:25%;margin-top: 40px; background: #4D91EA;color: white;">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+            <?= $success; ?>
+        </div>
+    <?php } ?>
+    <?php
+    $count = 1;
+    foreach ($post_list as $post_data) {
+        $description = preg_replace('/<br \/>/iU', '', $post_data['post_describtions']);
+        // print_r()
+    ?>
+
+        <?php if ($post_data['share_post'] > 0) { ?>
+            <div class="post-top-outer" style="width: 800px; display:none">
+                <div class="post-top ">
+                    <div class="dp-main">
+                        <div class="dp">
+                            <img src="<?php echo $post_data['share_post'][0]['avatar'] ?>" alt="">
+                        </div>
+                        <div class="post-info">
+                            <span class="name"><?= $post_data['share_post'][0]['first_name'] . " " . $post_data['share_post'][0]['last_name'] ?> shared this post</span>
+                            <span class="time"><?= $post_data['date'] ?></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="post-content-static" style="width:800px">
+                    <div class="post-top ">
+                        <div class="dp-main">
+                            <div class="dp">
+                                <img src="<?php echo $post_data['user_data']['avatar'] ?>" alt="">
+                            </div>
+                            <div class="post-info">
+                                <span class="name"><?php echo $post_data['user_data']['first_name'] . ' ' . $post_data['user_data']['last_name'] ?> </span>
+
+                                <!-- <span class="name"> Habib</span> -->
+
+                            </div>
+                        </div>
+
+                    </div>
+                    <img src="<?php echo $site_url . '/' . $post_data['media']['media'] ?>" alt="">
+                </div>
+                <div class="post-bottom">
+                    <div class="post-bottom-inner">
+                        <div class="action sweet-candy">
+                            <input type="hidden" class="lk" name="like" id="<?php echo $post_data['id'] ?>" value="1">
+                            <?php
+                            if ($post_data['like_data']['user_id'] == $wo['user']['user_id']) {
+                                $like = "ri-thumb-up-fill";
+                            } else {
+                                $like = "ri-thumb-up-line";
+                            }
+                            ?>
+                            <i id="like-btn<?php echo $count ?>" class="<?php echo $like ?> thumb">&nbsp;<span>Like</span></i>
+                        </div>
+                        <div class="action">
+                            <i class="ri-chat-2-fill comment" id="<?php echo $count ?>">&nbsp;<span>Comment</span></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="message-box" id="message-text<?php echo $count ?>">
+                    <?php foreach ($post_data['comment_list'] as $comment_list) {
+                        if ($comment_list) { ?>
+                            <div class="add-post-comment" id="ak<?php echo $comment_list['id'] ?>">
+                                <div class="comment-img"><img src="<?php echo $comment_list['avatar'] ?>" alt="">
+                                </div>
+                                <div id="add-post">
+                                    <span>
+                                        <?php echo $comment_list['first_name'] . " " . $comment_list['last_name'] ?>
+                                    </span>
+                                    <span class="sample" id="inner-text<?php echo $comment_list['id'] ?>"><?php echo $comment_list['comment'] ?>
+                                    </span>
+                                </div>
+                                <?php if ($comment_list['created_by'] == $wo['user']['user_id']) { ?>
+                                    <div id="icon-1" data-comment="<?php echo $comment_list['id'] ?>"><i class="ri-delete-bin-line " id="<?php echo $comment_list['id'] ?>"></i></div>
+                                    <div id="icon-2"><i class="ri-pencil-line" id="<?php echo $comment_list['id'] ?>"></i></div>
+                                <?php } ?>
+                            </div>
+                            <div class="inner-inp" id="inner-edit-inp<?php echo $comment_list['id'] ?>" style="display: none ;">
+                                <div class="inner-img"><img src="<?php echo  $user_image ?>" alt=""></div>
+                                <div class="inner-input-field "><input type="text" name="edit" id="edit-cmt<?php echo $comment_list['id'] ?>" value="<?php echo $comment_list['comment'] ?>"></div>
+                                <div class="comment-icon">
+                                    <i id="<?php echo $comment_list['id'] ?>" class="ri-send-plane-2-fill edit" style=""></i>
+                                </div>
+                            </div>
+                    <?php }
+                    } ?>
+                </div>
+                <div class="comment">
+                    <div style="display: none;" class="comment-section" id="hello<?php echo $count ?>">
+                        <div class="comment-img">
+                            <img src="<?php echo  $user_image ?>" alt="">
+                        </div>
+                        <div class="comment-inp">
+                            <input type="text" name="message_text" id="message<?php echo $count ?>" placeholder="Write a comment and press enter">
+                            <input type="hidden" name="" id="username" value=<?php echo $username ?>>
+                            <input type="hidden" name="" id="user_image" value=<?php echo  $user_image ?>>
+                            <input type="hidden" name="" id="post_id<?php echo $count ?>" value=<?php echo  $post_data['id'] ?>>
+                        </div>
+                        <div class="coment-icon">
+                            <i id="<?php echo $count ?>" class="ri-send-plane-2-fill comment-btn"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <?php } else {
+
+        ?>
+            <div class="main-post main-post-knktn-responsive">
+                <div class="dp-with-name">
+                    <div class="dp">
+                        <img src="<?= $post_data['user_data']['avatar'] ?>" alt="">
+                    </div>
+                    <div  >
+                        <div class="post-view-a">
+                            <span>@pfntek</span>
+
+
+                        </div>
+                        <div class="post-view-a">
+                            <a href="<?php echo $site_url . '/' . $post_data['user_data']['username'] ?>"><span class="name"> <?php echo $post_data['user_data']['username'] ?></span></a>
+
+                        </div>
+
+                    </div>
+                </div>
+                <div class="post-title-knktn">
+
+                    <div class="knktn_title_post">
+                        <a href="index.php?link1=view_post&post_id=<?php echo $post_data['id']; ?>&interest_id=<?php echo $interest_id; ?>"><span class="name"><?php echo $post_data['post_title'] ?></span></a>
+
+                    </div>
+                </div>
+
+                <div class=" post-date-knktn">
+                    <span class="time"><?php echo $post_data['date'] ?> </span>
+                </div>
+                <div class="post-addres-knktn">
+                    <span>
+                        <?php if ($post_data['location']) { ?> <span class=""><i class="fa-solid fa-location-dot map-dot"></i>-<?php echo "  " . $post_data['location'] ?></p>
+                            <?php } ?>
+                            </span>
+                </div>
+
+                <div><span><i class="fa-regular fa-eye  eye-post"></i><?php echo $post_data['view_count'] ?></span></div>
+            </div>
+
+            <div class="modal fade" id="<?php echo $post_data['id']?>" tabindex="-1" role="dialog" aria-labelledby="<?php echo $post_data['id']?>" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header" style="background-color: white;border:none">
+                            <!-- <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5> -->
+                            <button type="button" class="close " data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true" class="post-close-knktn">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="post-top-outer">
+                                <div class="post-top ">
+                                    <div class="dp-main">
+                                        <div class="dp">
+                                            <img src="<?= $post_data['user_data']['avatar'] ?>" alt="">
+                                        </div>
+
+                                        <div class="post-info ">
+                                            <a  href="<?php echo $site_url . '/' . $post_data['user_data']['username'] ?>"> <span class="name"><?php echo $post_data['post_title'] ?></span></a>
+                                            <a href="<?php echo $site_url . '/' . $post_data['user_data']['username'] ?> post-view-a"><span class="name"> <?php echo $post_data['user_data']['username'] ?></span></a>
+                                            <span class="time"><?php echo $post_data['date'] ?> <?php if ($post_data['location']) { ?> <span class=""><i class="fa fa-map-marker"></i>-<?php echo "  " . $post_data['location'] ?></span>
+                                                <?php } ?>
+                                            </span>
+
+                                        </div>
+                                    </div>
+
+                                    <?php if ($post_data['user_data']['user_id'] == $wo['user']['user_id']) { ?>
+                                        <span class="dropdown  icon-post">
+                                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down">
+                                                    <polyline points="6 9 12 15 18 9">
+
+                                                    </polyline>
+                                                </svg>
+                                            </a>
+                                            <ul class="dropdown-menu post-privacy-menu post-options" role="menu">
+                                                <li>
+                                                    <button onclick="edit_post(<?php echo $post_data['id'] ?>,<?php $site_url ?>)">Edit Post</button>
+                                                </li>
+                                                <li>
+                                                    <a href="<?= $site_url ?>/index.php?link1=knkt_post&interest_id=<?= $interest_id ?>&post_id=<?= $post_data['id'] ?>&action=delete">Delete Post</a>
+                                                </li>
+                                            </ul>
+                                        </span>
+                                    <?php }  ?>
+                                </div>
+                                <div class="post-content">
+                                    <p><?php echo $description ?></p>
+                                    <div style="display: flex; margin-top:20px">
+                                        <?php foreach ($post_data['post_interest'] as $interest_name) { ?>
+                                            <p style="padding-left: 9px; color: blue">
+                                                <?php echo $interest_name['interest_name'] ?>
+                                            </p>
+                                        <?php } ?>
+                                    </div>
+                                    <?php if ($post_data['media']['media'] != "" && $post_data['media']['media_type'] == '0') {
+                                    ?>
+                                        <img src="<?php echo $site_url . "/" . $post_data['media']['media'] ?>" alt="Mountains">
+
+                                    <?php } else if ($post_data['media']['media'] != "" && $post_data['media']['media_type'] == '1') { ?>
+                                        <audio controls>
+                                            <source src="<?php echo $site_url . "/" . $post_data['media']['media'] ?>" type="audio/mpeg">
+                                        </audio>
+                                    <?php } else {
+                                    } ?>
+                                </div>
+                                <div class="post-bottom">
+                                    <div class="post-bottom-inner">
+                                        <div class="action sweet-candy">
+                                            <input type="hidden" class="lk" name="like" id="<?php echo $post_data['id'] ?>" value="1">
+                                            <?php
+                                            if ($post_data['like_data']['user_id'] == $wo['user']['user_id']) {
+                                                $like = "ri-thumb-up-fill";
+                                            } else {
+                                                $like = "ri-thumb-up-line";
+                                            }
+                                            ?>
+                                            <i id="like-btn<?php echo $count ?>" class="<?php echo $like ?> thumb">&nbsp;<span>Like</span></i>
+                                        </div>
+                                        <div class="action">
+                                            <i class="ri-chat-2-fill comment" id="<?php echo $count ?>">&nbsp;<span>Comment</span></i>
+
+                                        </div>
+                                        <form accept="" method="POST" enctype="multipart/form-data">
+                                            <div class="action">
+                                                <a style="text-decoration: none;" href="<?php echo $site_url . $currentUrl . "&action=share&post_id=" . $post_data['id'] ?>"><i class="ri-share-line">&nbsp;<span>Share</span></i></a>
+
+                                            </div>
+
+                                        </form>
+                                        <?php if ($post_data['user_data']['user_id'] != $wo['user']['user_id']) {
+                                            if ($post_data['fellow'] == '1') {
+                                                $color = "blue";
+                                            } else {
+                                                $color = "#616770";
+                                            }
+                                        ?>
+                                            <div class="action">
+                                                <i style="color: <?php echo $color ?>;" class="ri-contacts-line" id="follow<?= $count; ?>">&nbsp;<span style="color: <?php echo $color ?>;">Follow</span></i>
+                                                <input type="hidden" id="user" value="<?php echo $post_data['user_data']['user_id'] ?>">
+                                            </div>
+                                            <div class="action">
+                                                <a href="<?php echo $site_url . "/messages" . "/" . $post_data['user_data']['user_id']; ?>" target="_blank"><i class="ri-message-fill">&nbsp;<span>Massage</span></i></a>
+
+                                            </div>
+                                        <?php
+                                        } ?>
+                                    </div>
+                                </div>
+                                <div class="message-box" id="message-text<?php echo $count ?>">
+                                    <?php foreach ($post_data['comment_list'] as $comment_list) {
+                                        if ($comment_list) { ?>
+                                            <div class="add-post-comment" id="ak<?php echo $comment_list['id'] ?>">
+                                                <div class="comment-img"><img src="<?php echo $comment_list['avatar'] ?>" alt=""></div>
+                                                <div id="add-post">
+                                                    <span>
+                                                        <?php echo $comment_list['first_name'] . " " . $comment_list['last_name'] ?>
+                                                    </span>
+                                                    <span class="sample" id="inner-text<?php echo $comment_list['id'] ?>"><?php echo $comment_list['comment'] ?>
+                                                    </span>
+                                                </div>
+                                                <?php if ($comment_list['created_by'] == $wo['user']['user_id']) { ?>
+                                                    <div id="icon-1" data-comment="<?php echo $comment_list['id'] ?>"><i class="ri-delete-bin-line " id="<?php echo $comment_list['id'] ?>"></i></div>
+                                                    <div id="icon-2"><i class="ri-pencil-line" id="<?php echo $comment_list['id'] ?>"></i></div>
+                                                <?php } ?>
+                                            </div>
+                                            <div class="inner-inp" id="inner-edit-inp<?php echo $comment_list['id'] ?>" style="display: none ;">
+                                                <div class="inner-img"><img src="<?php echo  $user_image ?>" alt=""></div>
+                                                <div class="inner-input-field "><input type="text" name="edit" id="edit-cmt<?php echo $comment_list['id'] ?>" value="<?php echo $comment_list['comment'] ?>"></div>
+                                                <div class="comment-icon">
+                                                    <i id="<?php echo $comment_list['id'] ?>" class="ri-send-plane-2-fill edit" style=""></i>
+                                                </div>
+                                            </div>
+                                    <?php }
+                                    } ?>
+                                </div>
+                                <div class="comment">
+                                    <div style="display: none;" class="comment-section" id="hello<?php echo $count ?>">
+                                        <div class="comment-img">
+                                            <img src="<?php echo  $user_image ?>" alt="">
+                                        </div>
+                                        <div class="comment-inp">
+                                            <input type="text" name="message_text" id="message<?php echo $count ?>" placeholder="Write a comment and press enter">
+                                            <input type="hidden" name="" id="username" value=<?php echo $username ?>>
+                                            <input type="hidden" name="" id="user_image" value=<?php echo  $user_image ?>>
+                                            <input type="hidden" name="" id="post_id<?php echo $count ?>" value=<?php echo  $post_data['id'] ?>>
+                                        </div>
+                                        <div class="coment-icon">
+                                            <i id="<?php echo $count ?>" class="ri-send-plane-2-fill comment-btn"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        <?php } ?>
+    <?php
+        $count++;
+    } ?>
+</div>
+
+
+
+<script>
+    function edit_post(post_id, stit_url) {
+        window.location = stit_url + "index.php?link1=edit_post&post_id=" + post_id + "&page_type=edit";
+    }
+    $('.ri-contacts-line').click(function() {
+        let count = $(this).attr("id");
+        let follow_id = $('#user').val();
+        $.ajax({
+            url: "index.php?link1=knkt_follow",
+            type: "POST",
+            data: {
+                following_id: follow_id,
+
+            },
+            success: function(data) {
+                data = JSON.parse(data);
+                let follow_status = data.data.follow_status;
+                if (follow_status == 'followed') {
+                    $("#" + count).css('color', 'blue');
+                    $("#" + count).children().css('color', 'blue');
+                } else {
+                    $("#" + count).css('color', '#616770');
+                    $("#" + count).children().css('color', '#616770');
+                }
+            }
+        })
+
+
+
+    })
+    $(document).ready(function() {
+        $(".comment").click(function() {
+            var a = $(this).attr('id');
+            $('#hello' + a).toggle();
+        });
+
+        $(".comment-btn").click(function() {
+            let comment_count = $(this).attr("id");
+            let input_value = $("#message" + comment_count).val();
+            let user_name = $("#username").val();
+            let user_image = $("#user_image").val();
+            let post_id = $("#post_id" + comment_count).val();
+
+            $("#message" + comment_count).val('');
+            $.ajax({
+                url: "index.php?link1=create_comment",
+                type: "POST",
+                data: {
+                    post_id: post_id,
+                    comment: input_value,
+                    type: "1"
+                },
+                success: function(data) {
+                    data = JSON.parse(data);
+                    let comment_id = data.data.comment_id;
+                    let comment = data.data.comment;
+                    $('#message-text' + comment_count).append(
+                        `<div class="add-post-comment" id="ak${comment_id}">
+                <div class="comment-img"><img src="${user_image}" alt=""></div>
+                        <div id="add-post">
+                            <span>${user_name}</span>
+                            <span"  class="sample" id="inner-text${comment_id}">${input_value}</span>
+                        </div>
+                        <div id="icon-1" data-comment="${comment_id}"><i class=ri-delete-bin-line id=${comment_id}></i>
+                        </div>
+                        <div id="icon-2"><i class="ri-pencil-line" id=${comment_id}></i>
+                        </div>
+                </div>
+                <div class="inner-inp" id="inner-edit-inp${comment_id}" style="display: none ;">
+                            <div class="inner-img"><img src="${user_image}" alt=""></div>
+                            <div class="inner-input-field "><input type="text" name="edit" id="edit-cmt${comment_id}" value="${comment}"></div>
+                            <div class="comment-icon">
+                                <i id="${comment_id}" class="ri-send-plane-2-fill edit" style=""></i>
+                            </div>
+                        </div>
+                `
+
+                    );
+                }
+            })
+        });
+        $(document).on("click", ".edit", function() {
+            let comment_id = $(this).attr('id');
+            let edit_value = $("#edit-cmt" + comment_id).val()
+            $.ajax({
+                url: "index.php?link1=create_comment",
+                type: "POST",
+                data: {
+                    comment_id: comment_id,
+                    comment: edit_value,
+                    type: "2"
+                },
+                success: function(data) {
+                    data = JSON.parse(data);
+                    let response = data.data.status
+                    if (response == '1') {
+                        let comment = data.data.comment
+                        $("#inner-edit-inp" + comment_id).css("display", "none");
+                        $('#inner-text' + comment_id).text(comment)
+
+
+                    }
+
+                }
+            })
+        })
+        $(document).on("click", ".ri-pencil-line", function() {
+            let comment_id = $(this).attr('id');
+            $('#inner-edit-inp' + comment_id).toggle(function() {
+                $("#inner-edit-inp").css("display", "flex")
+            }, function() {
+                $("#inner-edit-inp").css("display", "none")
+            });
+        })
+
+        $(document).on("click", ".ri-delete-bin-line", function() {
+            let comment_id = $(this).attr('id');
+            $.ajax({
+                url: "index.php?link1=create_comment",
+                type: "POST",
+                data: {
+                    comment_id: comment_id,
+                    type: "0"
+                },
+                success: function(data) {
+                    data = JSON.parse(data);
+                    let response = data.data.status
+                    if (response == '1') {
+                        $('#ak' + comment_id).css('display', 'none')
+                        $("#inner-edit-inp" + comment_id).css("display", "none");
+                    }
+
+                }
+            })
+        })
+
+        $('.sweet-candy').click(function(e) {
+            var post_ids = $(this).find('.lk').attr('id');
+            var value = $(this).find('.lk').val();
+            var icon = $(this).find('.thumb').attr('id');
+            if (value == "1") {
+                $(this).find('.lk').val(0);
+            } else {
+                $(this).find('.lk').val(1);
+            }
+            $.ajax({
+                url: "index.php?link1=like_post",
+                type: "POST",
+                data: {
+                    post_id: post_ids,
+                    post_like: value,
+                },
+                success: function(data) {
+                    data = JSON.parse(data);
+                    like_status = data.data.like_status
+                    if (like_status == 1) {
+                        $("#" + icon).addClass('ri-thumb-up-fill');
+
+                        $("#" + icon).removeClass('ri-thumb-up-line');
+                    } else {
+                        $("#" + icon).removeClass('ri-thumb-up-fill');
+                        $("#" + icon).css('color', 'blue');
+                        // $(this).find('.thumb').css('color', 'black');
+                        $("#" + icon).addClass('ri-thumb-up-line');
+                    }
+
+
+                }
+            })
+        });
+        $(window).scroll(function() {
+            if (window.scrollY > 10) {
+                $('#main-inner-id').addClass('main-inner-fixed')
+            } else {
+                $('#main-inner-id').removeClass('main-inner-fixed')
+            }
+        })
+
+    });
+</script>

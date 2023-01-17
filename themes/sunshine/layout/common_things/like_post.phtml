@@ -1,0 +1,17 @@
+<?php
+global $site_url, $wo;
+$interest_id = $_GET['interest_id'];
+$accestoken = Wo_access_token($wo['user']['id']);
+// post Like 
+$api_url = "api/knkt-post-like?access_token=" . $accestoken;
+$post_id = $_POST['post_id'];
+$post_like = $_POST['post_like'];
+
+$post_data = array(
+    "server_key" => $wo['config']['widnows_app_api_key'],
+    'post_id' => $post_id,
+    'post_like' => $post_like
+);
+$post_list_data = invokeApi('POST', $api_url, $post_data);
+echo json_encode($post_list_data);
+die;

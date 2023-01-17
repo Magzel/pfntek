@@ -1,0 +1,25 @@
+<?php
+global $site_url, $wo;
+$group_id = $_POST['group_id'];
+$message = $_POST['message'];
+$time = $_POST['time'];
+$get_image = $_POST['get_image'];
+if(isset($_FILES['message_image'])){
+    $image = new CURLFile($_FILES['message_image']['tmp_name'], $_FILES['message_image']['type'], $_FILES['message_image']['name']);
+    $image_media = $_FILES['message_image']['name'];
+}
+$accestoken = Wo_access_token($wo['user']['id']);
+$api_url = "api/create-group-message?access_token=" . $accestoken;
+// fellow 
+$post_data = array(
+    "server_key" => $wo['config']['widnows_app_api_key'],
+    'group_id' => $group_id,
+    'message' => $message,
+    'time' => $time,
+    'get_image' => $get_image,
+    "media" => $image,
+    "media_name" => $image_media,
+);
+$post_list_data = invokeApi_test('POST', $api_url, $post_data);
+echo json_encode($post_list_data);
+die;

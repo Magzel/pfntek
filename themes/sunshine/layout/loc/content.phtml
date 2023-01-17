@@ -1,0 +1,290 @@
+<?php
+// ini_set('display_errors', 1);
+// ini_set('display_startup_errors', 1);
+// error_reporting(E_ALL);
+$not_found = '<div class="empty_state"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M15.5,12C18,12 20,14 20,16.5C20,17.38 19.75,18.21 19.31,18.9L22.39,22L21,23.39L17.88,20.32C17.19,20.75 16.37,21 15.5,21C13,21 11,19 11,16.5C11,14 13,12 15.5,12M15.5,14A2.5,2.5 0 0,0 13,16.5A2.5,2.5 0 0,0 15.5,19A2.5,2.5 0 0,0 18,16.5A2.5,2.5 0 0,0 15.5,14M7,15V17H9C9.14,18.55 9.8,19.94 10.81,21H5C3.89,21 3,20.1 3,19V5C3,3.89 3.89,3 5,3H19A2,2 0 0,1 21,5V13.03C19.85,11.21 17.82,10 15.5,10C14.23,10 13.04,10.37 12.04,11H7V13H10C9.64,13.6 9.34,14.28 9.17,15H7M17,9V7H7V9H17Z" /></svg> ' . $wo["lang"]["no_result"] . '</div>';
+$type_to_find = '<div class="empty_state"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M9.62,12L12,5.67L14.37,12M11,3L5.5,17H7.75L8.87,14H15.12L16.25,17H18.5L13,3H11Z" /></svg> ' . $wo["lang"]["what_are_looking_for"] . '</div>';
+?>
+<div class="page-margin">
+<head>
+    <style>
+        .navbar-default {
+            background: #4d91ea !important;
+            border: none  !important;
+            height: 45px  !important;
+            box-shadow: 0 1px 4px rgb(0 0 0 / 20%)  !important;
+        }
+        .navbar-default .navbar-nav>li>a {
+            color: #ffff !important;
+        }
+        body {
+            padding-right: 0 !important;
+        }
+        @media (min-width: 992px) {
+            .content-container {
+                width: 97vw !important;
+            }
+        }
+
+    </style>
+</head>
+
+    <!-- <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script> -->
+    <div class="wow_main_float_head searchs">
+        <div class="container-fluid">
+ <!--            <form action="<?php echo Wo_SeoLink('index.php?link1=explore') ?>" method="get" class="search-filter-form" id="search_form">
+                <center>
+                    <div class="wow_search_head" style="width: 90%; margin: 10px 20px;">
+                        <div class="wow_srch_fields">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z" /></svg>
+                            <input type="text" name="query" id="query" placeholder="<?php echo $wo['lang']['keyword'];?>" value="<?php echo (isset($_GET['query'])) ? Wo_Secure($_GET['query']): '';?>" autocomplete="off">
+                        </div>
+                        <div class="wow_srch_fields">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M12,11.5A2.5,2.5 0 0,1 9.5,9A2.5,2.5 0 0,1 12,6.5A2.5,2.5 0 0,1 14.5,9A2.5,2.5 0 0,1 12,11.5M12,2A7,7 0 0,0 5,9C5,14.25 12,22 12,22C12,22 19,14.25 19,9A7,7 0 0,0 12,2Z" /></svg>
+                            <select name="country" id="country">
+                                <option value="all" selected><?php echo $wo['lang']['all'];?></option>
+                                <?php
+                                foreach ($wo['countries_name'] as $country_ids => $country) {
+                                    $selected_c = (!empty($_GET['country']) && $_GET['country'] == $country_ids) ? ' selected': '';
+                                    ?>
+                                    <option value="<?php echo $country_ids;?>" <?php echo $selected_c?>><?php echo $country;?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                        <div class="wow_srch_fields">
+                            <div class="dropdown">
+                                <button id="srch_fltrs" class="btn" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M6,13H18V11H6M3,6V8H21V6M10,18H14V16H10V18Z" /></svg> <?php echo $wo['lang']['filter'];?> <span class="caret"></span></button>
+                                <ul class="dropdown-menu wow_srch_drp_mnu" aria-labelledby="srch_fltrs">
+                                    <li>
+                                        <div class="wow_form_fields">
+                                            <label for="page_category">Category</label>
+                                            <select class="form-control" name="page_category" id="page_category" onchange="GetPageSubCategory(this)">
+                                                <option value="">All</option>
+                                                <?php foreach ($wo['page_categories'] as $category_id => $category_name) {?>
+                                                    <option value="<?php echo $category_id?>"><?php echo $category_name; ?></option>
+                                                <?php } ?>
+                                            </select>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="wow_form_fields">
+                                            <label for="page_sub_category">Sub Category</label>
+                                            <select name="page_sub_category" id="page_sub_category">
+                                                <option value="">All</option>
+                                                <?php
+                                                if (!empty($wo['page_sub_categories'][array_keys($wo['page_categories'])[0]])) {
+                                                    foreach ($wo['page_sub_categories'][array_keys($wo['page_categories'])[0]] as $id => $sub_category) { ?>
+                                                        <option value="<?php echo $sub_category['id']?>"><?php echo $sub_category['lang']; ?></option>
+                                                    <?php } } ?>
+                                            </select>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="wow_srch_fields">
+                            <button type="submit" class="btn btn-main btn-mat"><?php echo $wo['lang']['search'];?></button>
+                        </div>
+                    </div>
+                </center>
+            </form> -->
+            <ul class="nav nav-tabs wow_srch_tabs">
+                <!-- <li class="active">
+                    <a data-toggle="tab" data-target="#users" href="#" class="btn btn-mat">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M16 17V19H2V17S2 13 9 13 16 17 16 17M12.5 7.5A3.5 3.5 0 1 0 9 11A3.5 3.5 0 0 0 12.5 7.5M15.94 13A5.32 5.32 0 0 1 18 17V19H22V17S22 13.37 15.94 13M15 4A3.39 3.39 0 0 0 13.07 4.59A5 5 0 0 1 13.07 10.41A3.39 3.39 0 0 0 15 11A3.5 3.5 0 0 0 15 4Z" /></svg> <?php echo $wo['lang']['users'];?>
+                    </a>
+                </li> -->
+
+            </ul>
+            <?php
+            $whereFilter = "";
+            if (isset($_GET) && $_GET !="" && count($_GET) > 0) {
+                if (isset($_GET['query']) && trim($_GET['query']) !="") {
+                    $whereFilter .= " AND (page_name like ('%".addslashes($_GET['query'])."%') OR page_title like ('%".addslashes($_GET['query'])."%') ) ";
+                }
+                if (isset($_GET['country']) && trim($_GET['country']) !="" && $_GET['country'] !="all" && $_GET['country'] !=0) {
+                    $whereFilter .= " AND countries = '".$_GET['country']."' ";
+                }
+                if (isset($_GET['page_category']) && trim($_GET['page_category']) !="") {
+                    $whereFilter .= " AND page_category = '".$_GET['page_category']."' ";
+                }
+                if (isset($_GET['page_sub_category']) && trim($_GET['page_sub_category']) !="") {
+                    $whereFilter .= " AND sub_category = '".$_GET['page_sub_category']."' ";
+                }
+            }
+            require ('config.php');
+            $whereFilter .=" limit 100";
+            $con=mysqli_connect($sql_db_host,$sql_db_user,$sql_db_pass,$sql_db_name);
+            $query = mysqli_query($con,"SELECT * FROM Wo_Users".$whereFilter);
+            $data=array();
+            while ($item = mysqli_fetch_array($query))
+            {
+                if($item['lat'] != "" && $item['lng'] != ""){
+                    $VisURL = $wo['site_url'].'/'.$item['username'];
+                    $imgURL = $wo['site_url'].'/'.$item['avatar'];
+                    //$data['title']=$item['page_name'];
+                    $data[]= array(
+                        'title' => $item['username'],
+                        'lat' => $item['lat'],
+                        'lng' => $item['lng'],
+                        'icon' => $imgURL,
+                        'description' => '<div class="info_content" style ="text-align:center;padding:7px"><p>'.$item['username'].'</p>
+                        <img src= '.$imgURL.' style ="width:40px; height: 40px;border-radius: 50%;"></br></br>
+                        <a title="Open Page" target="_blank" style="text-decoration: none; border:1px solid green; padding:5px; border-radius:10px;" href='.$VisURL.'>'.$item['username'].'</a>
+                        </div>'
+                    );
+                }
+            }
+            // if(empty($empty_array)){
+            //     $data=$wo['rendom_user'];
+            // }
+
+            ?>
+    <div class="row">
+        <center>
+            <div class="col-12" style="width: 98%; margin: 10px; position: relative;">
+                <?php
+                    $master_arry =[];
+                    $con=mysqli_connect($sql_db_host,$sql_db_user,$sql_db_pass,$sql_db_name);
+                    $master_query = mysqli_query($con,"SELECT * FROM Wo_Posts where postMap is not NULL and  postFile is not NULL and postFile !='' and postMap !='' GROUP BY postMap ");
+                    $master_counter = 0 ;
+                    while ($master_item = mysqli_fetch_array($master_query))
+                    {
+                        $locationName =$master_item['postMap'];
+                        $query = mysqli_query($con,"SELECT postFile FROM Wo_Posts where postMap='$locationName' and  postFile is not NULL and postFile !=''");
+                        $address = $locationName; // Google HQ
+                        $key = $wo['config']['google_map_api'];
+                        $prepAddr = str_replace(' ','+',$address);
+                        $geocode=file_get_contents('https://maps.google.com/maps/api/geocode/json?address='.$prepAddr.'&sensor=false&key='.$key);
+                        $output= json_decode($geocode);
+                        $latitude = $output->results[0]->geometry->location->lat;
+                        $longitude = $output->results[0]->geometry->location->lng;
+                        $posts=array();
+                        $posts['lat'] = $latitude;
+                        $posts['long'] = $longitude;
+                        $posts['slider'] = "<div id='myCarousel_".$master_counter."'class='carousel slide' data-ride='carousel'> <div class='carousel-inner'>
+                               ";
+                        $posts['description'] = "<div id='info_content'class='info_content' style='display:flex;flex-wrap: wrap;justify-content: space-between;/* flex-direction: row; */' >
+                               ";
+                        $counter = 1;
+                        while ($item = mysqli_fetch_array($query))
+                        {
+                          $imageName = explode('.',$item['postFile']);
+                          if(isset($imageName[1]) && in_array($imageName[1] , ['jpg', 'JPG', 'png' ,'PNG' ,'jpeg' ,'JPEG'])){
+                            $posts['modal_id'] = 'modal_'.$master_counter;
+                            if($counter == 1){
+                                $posts['slider'] .= " <div class='item active' style='width: 100%;height: 100%;object-fit: cover;' onclick='openSlider()'> <img src=".$wo['site_url'].'/'.$item['postFile']." alt='Los Angeles'style='width:100%;height:400px;' >
+                                </div>";
+                                $posts['icon'] = $wo['site_url'].'/'.$item['postFile'];
+                            }else{
+                                $posts['slider'] .= " <div class='item' style='width: 100%;height: 100%;object-fit: cover;' onclick='openSlider()'> <img src=".$wo['site_url'].'/'.$item['postFile']." alt='Los Angeles'style='width:100%; height:400px;'>
+                                </div>";
+                            }
+                            $posts['description'] .= " <div class='slider_image' style='padding: 10px;height: 180px;width: 181px;' onclick='openSlider(\"". $posts['modal_id']."\")'> <img src=".$wo['site_url'].'/'.$item['postFile']." alt='Los Angeles'style='width: 100%;height: 100%;cursor: pointer;' >
+                                </div>";
+                            $counter++;
+                          }
+
+                        }
+                        $posts['slider'] .= " </div><a class='left carousel-control' href='#myCarousel_".$master_counter."' data-slide='prev'>
+                              <span class='glyphicon glyphicon-chevron-left'></span>
+                              <span class='sr-only'>Previous</span>
+                            </a>
+                            <a class='right carousel-control' href='#myCarousel_".$master_counter."' data-slide='next'>
+                              <span class='glyphicon glyphicon-chevron-right'></span>
+                              <span class='sr-only'>Next</span>
+                            </a>
+                          </div>";
+                          $posts['description'] .= " </div>";
+                        $master_arry[] = $posts;
+                        $master_counter++;
+                    }
+                if($master_counter>0){
+                    // print_r($master_arry);
+                    // die();
+                ?>
+                <script type="text/javascript">
+
+                var markers = <?php echo json_encode($master_arry) ?>;
+                console.log('--', markers);
+                window.onload = function () {
+                    LoadPostMap();
+                }
+                function LoadPostMap() {
+                    var myLatlng = new google.maps.LatLng(markers[0].lat, markers[0].long);
+                    var myOptions = {
+                    zoom: 4,
+                    center: myLatlng,
+                    mapTypeId: google.maps.MapTypeId.ROADMAP
+                    }
+                    var map = new google.maps.Map(document.getElementById("dvpostMap"), myOptions);
+
+                    //Create and open InfoWindow.
+                    var infoWindow = new google.maps.InfoWindow(); 
+                    for (var i = 0; i < markers.length; i++) {
+                        var data = markers[i];
+                        var myLatlng = new google.maps.LatLng(data.lat, data.long);       
+                        var marker = new google.maps.Marker({
+                            position: myLatlng,
+                            map: map,
+                            icon: {
+                                url: data.icon,
+                                size: new google.maps.Size(36, 46),
+                                scaledSize: new google.maps.Size(36, 46),
+                                anchor: new google.maps.Point(0, 50),
+                            },
+                        });
+                        //Attach click event to the marker.
+                        (function (marker, data) {
+                            google.maps.event.addListener(marker, "click", function (e) {
+                                //Wrap the content inside an HTML DIV in order to set height and width of InfoWindow.
+                                infoWindow.setContent("<div >" + data.description + "</div>");
+                                infoWindow.open(map, marker);
+                                // infoWindow.setContent( markers.description);
+                                infoWindow.open(map, marker);
+                            });
+                            google.maps.event.addListener(infoWindow, 'domready', function(){
+                            }); 
+                        })(marker, data);
+                    }    
+                }
+                function openSlider(modal) {
+                    $('#'+modal).modal('show');
+                }
+                </script>
+                <div id='dvpostMap' style='width: 100%;height: 80vh; position: absolute;'></div>
+                <?php 
+                foreach ($master_arry as $arr ) {
+                    echo "
+                    <div class='modal fade' id='".$arr['modal_id']."' role='dialog'>
+                    <div class='modal-dialog'>
+                      <div class='modal-content'>
+                        <div class='modal-header'>
+                          <button type='button' class='close' data-dismiss='modal'>&times;</button>
+                         
+                        </div>
+                        <div class='modal-body'>
+                         ".$arr['slider']."
+                        </div>
+                      </div>
+                      
+                    </div>
+                    </div>";
+
+                }
+                ?>
+                    <!--  <div class="alert alert-info">
+                        <h4>loading posts!</h4>
+                    </div> -->
+                <?php
+                }else{
+                     ?>
+                    <div class="alert alert-info">
+                        <h4>No Result found!</h4>
+                    </div>
+                    <?php
+                }
+            ?>
+         </div>
+    </center>
+ </div> 
