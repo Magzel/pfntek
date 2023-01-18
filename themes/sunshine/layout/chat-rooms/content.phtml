@@ -138,7 +138,7 @@ $group_list_result = $response['data']['data'];
 
                 <div class="public-group-img"><i class="ri-lock-fill"></i></div>
                 <div class="public-group-para">
-                    <p>“Browse Private Chat Groups</p>
+                    <p>Browse Private Chat Groups</p>
                 </div>
             </div>
         </a>
@@ -167,7 +167,7 @@ $group_list_result = $response['data']['data'];
                                         <p class="text-secondary mb-1 group-name"><?= $group['short_discription'] ?></p>
                                         <p class="text-muted font-size-sm" style="word-break: break-word;min-height:120px;"><?= $group['detail_discription'] ?>
                                         </p>
-                                        <div class="section">
+                                        <div class="section chat_see_group">
                                             <?php if ($group['user_data']['0']['user_id'] == $wo['user']['user_id']) { ?>
                                                 <div> <a href="<?php echo Wo_Link('index.php?link1=group-chat&group_id=' . $group['id']) ?>"><button class="chat-btn">See Chat</button></a></div>
                                             <?php } else { ?>
@@ -234,11 +234,11 @@ $group_list_result = $response['data']['data'];
                         </button>
                     </div>
 
-                    <div class="reqiured-tit">
+                    <div class="reqiured-tit drk_required_style">
                         <div class="row">
                             <div class="col-md-6">
                                 <label style=" padding: 0px; margin: 9px 0px 8px 5px;" for="Add Post Title">Name</label>
-                                <input type="text" class="form-control" style="background-color: #f9f9f9;height: 45px;" maxlength="11" id="Post Title" name="name" placeholder="Name" value="<?php echo $name ?>" required />
+                                <input type="text" class="form-control" style="background-color: #f9f9f9;height: 45px;"  id="Post Title" name="name" placeholder="Name" value="<?php echo $name ?>" required />
                             </div>
                             <div class="col-md-6">
                                 <label style=" padding: 0px; margin: 9px 0px 8px 5px;" for="Add Post Title">Short Describtion</label>

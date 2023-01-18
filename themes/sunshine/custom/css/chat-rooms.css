@@ -284,11 +284,15 @@ label {
     justify-content: space-between;
     align-items: center;
     margin: auto;
+ 
+
+}
+.chat_see_group{
     position: absolute;
     bottom: 0px;
-    width: 80%;
     margin-bottom: 5px;
-
+    width: 80%;
+    justify-content: space-between;
 }
 
 #icon-group {
@@ -350,8 +354,11 @@ label {
 
 @media (min-width: 376px) and (max-width: 400px) {
     #avatar {
-        top: 27%;
+        top: 32%;
 
+    }
+    .card{
+        min-height: 50vh;
     }
   
     .public-group {
@@ -367,8 +374,11 @@ label {
 
 @media (min-width: 401px) and (max-width: 415px) {
     #avatar {
-        top: 25%;
+        top: 32%;
 
+    }
+    .card{
+        min-height: 50vh;
     }
   
     .public-group {
@@ -385,6 +395,9 @@ label {
     #avatar {
         top: 32%;
 
+    }
+    .card{
+        min-height: 50vh;
     }
     .public-group {
         gap: 5px;
@@ -430,8 +443,9 @@ label {
     
     .sticky-main {
         width: 450px;
-        margin-top: 6rem;
+        margin-top: 3rem;
         padding-right: 5px;
+      
 
     }
     .public-group {
@@ -476,29 +490,45 @@ label {
 
 @media (min-width: 541px)and (max-width: 768px) {
     #avatar {
-        top: 22%;
-
+        top: 40%;
+    }
+    .card{
+        min-height: 45vh;
     }
 }
 
+
 @media (min-width: 769px) and (max-width: 850px) {
     #avatar {
-        top: 19%;
-
+        top: 40%;
+    }
+    .card{
+        min-height: 50vh;
     }
 }
 
 @media (min-width: 851px) and (max-width: 990px) {
     #avatar {
-        top: 17%;
-
+        top: 40%;
+    }
+    .card{
+        min-height: 45vh;
     }
 }
 
-@media (min-width: 991px) and (max-width: 1280px) {
+@media (min-width: 991px) and (max-width: 1240px) {
     #avatar {
         top: 29%;
-
+    }
+   
+    
+}
+@media (min-width: 1241px) and (max-width: 1280px) {
+    #avatar {
+        top: 29%;
+    }
+    .card{
+        min-height: 50vh;
     }
 }
 @media all and (min-width: 1405px) {
