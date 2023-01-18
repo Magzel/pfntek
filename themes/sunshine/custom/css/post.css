@@ -709,9 +709,24 @@ form .button-area {
 }
 
 .card-post_kn {
-  background-color: white !important;
+  background-color: white;
   padding: 10px;
   margin: 10px;
-  width: 270px;
+  width: 280px;
+  height: 40vh;
+  border-radius: 10px;
+   
 }
-
+.card_container_post_ktn{
+  width: 100%;
+}
+.post_img_audio_bg{
+  width: 100%;
+  background-color:lightgrey;
+  border-radius: 10px;
+ 
+}
+.post_img_audio_bg img{
+   border-radius: 10px;
+    
+}
