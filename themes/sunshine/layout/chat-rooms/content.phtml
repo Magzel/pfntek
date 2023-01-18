@@ -111,7 +111,7 @@ $group_list_result = $response['data']['data'];
             <?= $success; ?>
         </div>
     <?php } ?>
-    <div class="main sticky-main" id="main-inner-id">
+    <div class="main sticky-main lg-view-screen" id="main-inner-id">
         <a class="blue-arrow" href="">
             <i class="ri-arrow-left-line"></i>
         </a>
@@ -139,6 +139,39 @@ $group_list_result = $response['data']['data'];
                 <div class="public-group-img"><i class="ri-lock-fill"></i></div>
                 <div class="public-group-para">
                     <p>Browse Private Chat Groups</p>
+                </div>
+            </div>
+        </a>
+    </div>
+    <!-- mobile view -->
+    <div class="main sticky-main mobile_view_screen" id="main-inner-id">
+        <a class="blue-arrow" href="">
+            <i class="ri-arrow-left-line"></i>
+        </a>
+
+        <div class="public-group " type="" name="" id="add">
+            <div class="public-group-img"><i class="ri-add-circle-fill"></i> </div>
+            <div class="public-group-para">
+                <p>Create Group</p>
+            </div>
+        </div>
+
+
+        <a href="<?php echo $site_url . '/index.php?link1=chat-rooms&chat_list=0' ?>">
+            <div class="public-group" type="" name="">
+                <div class="public-group-img"><i class="ri-user-3-fill"></i></div>
+                <div class="public-group-para">
+                    <p> Public Group</p>
+                </div>
+            </div>
+        </a>
+
+        <a href="<?php echo $site_url . '/index.php?link1=chat-rooms&chat_list=1' ?>">
+            <div class="public-group" type="" name="">
+
+                <div class="public-group-img"><i class="ri-lock-fill"></i></div>
+                <div class="public-group-para">
+                    <p> Private Group</p>
                 </div>
             </div>
         </a>
@@ -206,7 +239,7 @@ $group_list_result = $response['data']['data'];
     <div class="modal-dialog">
         <div class="modal-content">
             <div style="padding-top:10px;">
-                <h3 class="text-center">Create Chat Room</h3>
+                <h3 class="text-center drk_required_style">Create Chat Room</h3>
             </div>
             <form id="contact" action="" method="POST" class="section contact" enctype="multipart/form-data">
                 <div class="modal-body">
@@ -234,17 +267,17 @@ $group_list_result = $response['data']['data'];
                         </button>
                     </div>
 
-                    <div class="reqiured-tit drk_required_style">
+                    <div class="reqiured-tit ">
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-6 drk_required_style">
                                 <label style=" padding: 0px; margin: 9px 0px 8px 5px;" for="Add Post Title">Name</label>
                                 <input type="text" class="form-control" style="background-color: #f9f9f9;height: 45px;"  id="Post Title" name="name" placeholder="Name" value="<?php echo $name ?>" required />
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-6 drk_required_style">
                                 <label style=" padding: 0px; margin: 9px 0px 8px 5px;" for="Add Post Title">Short Describtion</label>
                                 <input type="text" class="form-control" style="background-color: #f9f9f9;height: 45px;" id="Post Title" name="short_discription" placeholder="Short Describtion" value="<?php $short_discription ?>" required />
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-6 drk_required_style">
                                 <label style=" padding: 0px; margin: 9px 0px 8px 5px;" for="Add Post Title">Group Privacy</label>
                                 <select style="background-color: #f9f9f9;height: 45px;" class="form-control" name="group_type" id="">
                                     <option value="1">Private</option>
@@ -252,10 +285,10 @@ $group_list_result = $response['data']['data'];
                                 </select>
                             </div>
                         </div>
-                        <div class="row">
+                        <div class="row drk_required_style">
                             <label for="Add Post Title">Detail Describtion </label>
                             <div class="container" style="width:100%">
-                                <textarea class="form-control" style="background-color: #f9f9f9;height: 95px;margin-bottom:20px;" name="detail_discription" class="mb-lg-8" value="<?php $detail_discription ?>"></textarea>
+                                <textarea class="form-control" style="background-color: #f9f9f9;height: 95px;margin-bottom:20px;" name="detail_discription" placeholder="Detail Describtion" class="mb-lg-8" value="<?php $detail_discription ?>"></textarea>
                             </div>
                         </div>
                         <button class="btn-post" name="submit" type="submit">Create Group</button>

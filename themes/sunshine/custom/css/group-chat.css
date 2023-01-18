@@ -464,7 +464,7 @@
   height: calc(100% - 120px);
   padding: 50px;
   overflow-y: auto;
-  background-color: gray;
+  background-color: #f0f2f5;
   /* background-color: rgb(226, 217, 217); */
   /* background-image: url('../../img/backgrounds/group-chat-bg.jpg'); */
 }

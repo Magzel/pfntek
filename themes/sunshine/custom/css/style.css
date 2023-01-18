@@ -1874,9 +1874,9 @@ label img {
   font-size: 14px;
   color:#666666 ;
 }
-.post-addres-knktn{
-  width: 200px;
-  text-align: center;
+.post-addres-knktn {
+  width: 150px;
+  text-align: right;
   height: 20px;
   overflow: hidden;
   text-overflow: ellipsis; 

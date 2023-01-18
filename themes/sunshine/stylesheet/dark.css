@@ -523,6 +523,7 @@ body .sun_pub_mid_foot .poster-left-buttons {
     border-color: rgb(255 255 255 / 15%);
 }
 
+
 .review_list {
     background-color: #383838;
 }
@@ -541,4 +542,11 @@ body .sun_pub_mid_foot .poster-left-buttons {
 }
 .drk_required_style{
     color: white;
+}
+.drk_required_style label{
+    color: white;
+}
+.drk_select_option{
+    color: black !important;
+  
 }

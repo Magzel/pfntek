@@ -127,31 +127,31 @@ if (isset($_POST['submit'])) {
                     </div>
                     <div class="reqiured-tit">
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-6 drk_required_style">
                                 <label for="Add Post Title">Add Post Title *</label>
                                 <input type="text" class="form-control" style="background-color: #f9f9f9;height: 45px;" id="Post Title" name="title" placeholder="Post Title" required />
                             </div>
 
-                            <div class="col-md-6">
+                            <div class="col-md-6 drk_required_style ">
                                 <label for="Add Post Title">City, State, or Zip Code</label>
                                 <input name="city" id="searchTextField" style="background-color: #f9f9f9;height: 45px;" type="text" class="form-control" placeholder="<?php echo $wo['lang']['maps_placeholder'] ?>">
 
 
                             </div>
-                            <div class="col-md-12">
+                            <div class="col-md-12 drk_required_style ">
                                 <label for="Add Post Title">Choose up to 5 Categeries (Optional)</label>
-                                <select id="choices-multiple-remove-button" placeholder="Select upto 5 Categeries" name="interest_id[]" multiple>
+                                <select class="drk_select_option" id="choices-multiple-remove-button"  placeholder="Select upto 5 Categeries" name="interest_id[]" multiple>
                                     <?php foreach ($user_interest_id_and_data as $user_interest) { ?>
-                                        <option value="<?php echo $user_interest['interest_id'] ?>"><?php echo $user_interest['name'] ?></option>
+                                        <option  value="<?php echo $user_interest['interest_id'] ?>"><?php echo $user_interest['name'] ?></option>
                                     <?php } ?>
                                 </select>
                             </div>
 
                         </div>
-                        <div class="row">
+                        <div class="row drk_required_style">
                             <label for="Add Post Title">Add Post Discription </label>
                             <div class="container" style="width:100%">
-                                <textarea class="form-control" style="background-color: #f9f9f9;height: 95px;" name="description" class="mb-lg-8"></textarea>
+                                <textarea class="form-control" placeholder="Post Discription" style="background-color: #f9f9f9;height: 95px;" name="description" class="mb-lg-8"></textarea>
                             </div>
                         </div>
                         <div class="radois">
@@ -191,8 +191,8 @@ if (isset($_POST['submit'])) {
 
                         </div>
 
-                        <div>
-                            <input type="checkbox" id="post-check">
+                        <div class="drk_required_style">
+                            <input type="checkbox" id="post-check" >
                             <label> The post will automatically be deleted if it has no activity in last 6months.</label>
 
                         </div>

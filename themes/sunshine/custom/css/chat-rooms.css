@@ -11,6 +11,7 @@ body {
     margin-top: 1rem;
 }
 
+
 .btn-files {
     position: relative;
     /*   
@@ -263,7 +264,7 @@ label {
 .img-in-cover img {
     width: 100%;
     height: 20vh;
-    object-fit: cover;
+    /* object-fit: cover; */
     border-radius: 5px;
 }
 
@@ -352,6 +353,10 @@ label {
     left: 400px;
 }
 
+.mobile_view_screen{
+    display: none;
+  }
+
 @media (min-width: 376px) and (max-width: 400px) {
     #avatar {
         top: 32%;
@@ -434,7 +439,12 @@ label {
     .public-group-img i {
         font-size: 13px;
     }
-
+  .mobile_view_screen{
+    display: flex;
+  }
+  .lg-view-screen{
+    display: none;
+  }
 }
 @media (min-width: 420px) and (max-width: 540px) {
     .main-inner-id {
@@ -500,7 +510,7 @@ label {
 
 @media (min-width: 769px) and (max-width: 850px) {
     #avatar {
-        top: 40%;
+        top: 35%;
     }
     .card{
         min-height: 50vh;
