@@ -755,6 +755,7 @@ form .button-area {
   margin: auto;
   display: flex;
   padding-bottom: 50px;
+ 
 }
 
 .card_ps_avater {
@@ -772,14 +773,79 @@ form .button-area {
 }
 
 .card_ps_username {
-  display: flex;
-  justify-content: flex-end;
+display: flex;
+ justify-content:space-between;
+
+ align-items: center;
+ 
+  
 }
 .card_ps_title a {
   color: #0d6efd;
   text-decoration: none;
   font-size: 14px;
 }
+
+
+
+.but-ps-view {
+  display: inline-flex;
+  height: 40px;
+  width: 150px;
+  margin: auto 40px;
+  border: 2px solid #BFC0C0;
+  color: #BFC0C0;
+  text-transform: uppercase;
+  text-decoration: none;
+  font-size: .8em;
+  letter-spacing: 1.5px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+
+
+
+
+
+/*  Button */
+
+#but-ps-2 {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+#but-ps-2 a {
+  position: relative;
+  transition: all .35s ease-Out;
+}
+
+#slide_ps_view {
+  width: 100%;
+  height: 100%;
+  left: -200px;
+  background:#025ce3;
+  position: absolute;
+  transition: all .35s ease-Out;
+  bottom: 0;
+}
+#but-ps-2 a{
+  text-decoration: none;
+  color:#025ce3;
+  font-size: 10px;
+}
+#but-ps-2:hover #slide_ps_view{
+  left: 0;
+}
+.but-ps-view:hover{
+  border: 2px solid #025ce3;
+}
+#but-ps-2:hover a {
+  color: white;
+}
+
 
 /* post media query card */
 @media (260px < width <= 540px) {

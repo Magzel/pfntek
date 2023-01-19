@@ -271,9 +271,14 @@ $currentUrl = $_SERVER['REQUEST_URI'];
 
 
             <div class="card-body card_ps_body">
-          <h5 class="card-title  card_ps_username"> 
+                <div class="card_ps_username">
+                    <span><i class="fa-regular fa-eye  eye-post"></i><?php echo $post_data['view_count'] ?>  of Views</span>
+                <h5 class="card-title  ">       
              <a target="blank" href="<?php echo $site_url . '/' . $post_data['user_data']['username'] ?>">@<span class="name"> <?php echo $post_data['user_data']['username'] ?></span></a>
                 </h5>
+                
+                                </div>
+       
                 <h5 class="card-title card_ps_title  "> 
                      <a href="index.php?link1=view_post&post_id=<?php echo $post_data['id']; ?>&interest_id=<?php echo $interest_id; ?>"><span class="name"><?php echo $post_data['post_title'] ?></span></a>
         </h5>
@@ -289,7 +294,13 @@ $currentUrl = $_SERVER['REQUEST_URI'];
                         </p>
           
         </div>
-            <div style="justify-content: center;display:flex"> <span><i class="fa-regular fa-eye  eye-post"></i><?php echo $post_data['view_count'] ?>  of Views</span></div>
+     
+             <div class="but-ps-view" id="but-ps-2">
+    <div id="slide_ps_view"></div>
+     <a href="index.php?link1=view_post&post_id=<?php echo $post_data['id']; ?>&interest_id=<?php echo $interest_id; ?>"> View Post</a>
+  </div>
+        
+     
        </div>
       </div>
                 
