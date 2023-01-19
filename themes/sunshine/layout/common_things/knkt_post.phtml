@@ -137,7 +137,7 @@ $currentUrl = $_SERVER['REQUEST_URI'];
             <?= $success; ?>
         </div>
     <?php } ?>
-    <div style="display: flex; flex-wrap: wrap;">
+    <div class="ps_card_dis_cen">
     <?php
     $count = 1;
     foreach ($post_list as $post_data) {
@@ -243,8 +243,9 @@ $currentUrl = $_SERVER['REQUEST_URI'];
 
         ?>
          
-            <!-- new design  -->
-                    <div style="display: flex; width:300px;flex-wrap:wrap">
+            <!--  design  post -->
+
+                    <div class="ps_main_knn">
 
             <div class="card_container_post_ktn ">
             <div class="card-post_kn " >
@@ -252,40 +253,41 @@ $currentUrl = $_SERVER['REQUEST_URI'];
               
                      <?php if ($post_data['media']['media'] != "" && $post_data['media']['media_type'] == '0') {
                                     ?>
-                                        <img src="<?php echo $site_url . "/" . $post_data['media']['media'] ?>" alt="Mountains"  style="width:100%; height:20vh;">
+                                        <img src="<?php echo $site_url . "/" . $post_data['media']['media'] ?>" alt="Mountains" >
 
                                     <?php } else if ($post_data['media']['media'] != "" && $post_data['media']['media_type'] == '1') { ?>
-                                        <audio controls  style="width:100%; height:20vh; padding-bottom: 50px ;">
+                                        <audio controls >
                                             <source src="<?php echo $site_url . "/" . $post_data['media']['media'] ?>" type="audio/mpeg">
                                         </audio>
                                     <?php } else {
                                     } ?>
                    
             </div>
-            <div   style="width:100%; display:flex;justify-content:flex-end;margin-top:-30px">
+            <div  class="card_ps_avater">
          <img src="<?= $post_data['user_data']['avatar'] ?>"
-          style="width:auto; height:50px;border-radius:20px;"
+        
           />
        </div>
 
 
-            <div class="card-body">
-          <h5 class="card-title " style="display:flex;justify-content:flex-end"> 
-             <a href="<?php echo $site_url . '/' . $post_data['user_data']['username'] ?>">@<span class="name"> <?php echo $post_data['user_data']['username'] ?></span></a>
+            <div class="card-body card_ps_body">
+          <h5 class="card-title  card_ps_username"> 
+             <a target="blank" href="<?php echo $site_url . '/' . $post_data['user_data']['username'] ?>">@<span class="name"> <?php echo $post_data['user_data']['username'] ?></span></a>
                 </h5>
-                <h5 class="card-title "> 
+                <h5 class="card-title card_ps_title  "> 
                      <a href="index.php?link1=view_post&post_id=<?php echo $post_data['id']; ?>&interest_id=<?php echo $interest_id; ?>"><span class="name"><?php echo $post_data['post_title'] ?></span></a>
         </h5>
         <div style="display: flex;justify-content:space-between" >
        
           <p class="card-text"> <span class="time"><?php echo $post_data['date'] ?> </span></p>
-            <p>
+          
+               
             <p class="post-addres-knktn">
                         <?php if ($post_data['location']) { ?> <span class=""><i class="fa-solid fa-location-dot map-dot"></i>-<?php echo "  " . $post_data['location'] ?>
                             <?php } ?>
                             </span>
                         </p>
-            </p>
+          
         </div>
             <div style="justify-content: center;display:flex"> <span><i class="fa-regular fa-eye  eye-post"></i><?php echo $post_data['view_count'] ?>  of Views</span></div>
        </div>

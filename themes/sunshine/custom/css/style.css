@@ -1430,6 +1430,7 @@ label img {
   padding-top: 10px;
   position: fixed;
   top: 25px;
+  margin-left: 140px;
 
 }
 
@@ -1883,7 +1884,7 @@ label img {
 }
 
 .main-auto-top{
-width: 800px;
+width: 890px;
 }
 .post-button-knkt-show a{
 color:#666666 ;
