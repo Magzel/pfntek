@@ -9047,7 +9047,7 @@ function Wo_list_interest($user_id, $search = "")
         if (!empty($search)) {
             $all_interest = "SELECT * FROM `wo_interest` Where `name`  LIKE '$search%'";
         } else {
-            $all_interest = "SELECT * FROM `wo_interest` WHERE 1";
+          $all_interest = "SELECT * FROM `wo_interest` ORDER BY `name` ";
         }
         $all_interest_response = mysqli_query($sqlConnect, $all_interest);
         if (mysqli_num_rows($all_interest_response) > 0) {
@@ -9065,7 +9065,7 @@ function Wo_list_interest($user_id, $search = "")
             }
             $user_interest_ids = implode(',', $interest_id);
             $user_interest_post = array();
-            $user_interest_data = "SELECT * FROM `wo_interest` WHERE `id`  in ($user_interest_ids)";
+             $user_interest_data = "SELECT * FROM `wo_interest` WHERE `id`  in ($user_interest_ids) ORDER BY `name` ";
             $user_interest_response = mysqli_query($sqlConnect, $user_interest_data);
             if (mysqli_num_rows($user_interest_response) > 0) {
                 while ($user_interest = mysqli_fetch_assoc($user_interest_response)) {
@@ -10142,4 +10142,3 @@ function create_post_view($user_id, $post_id)
         }
     }
 }
-
