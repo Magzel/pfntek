@@ -56,32 +56,32 @@ if (isset($_POST['submit'])) {
 
         <div class="reqiured-tit">
           <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-6 drk_required_style">
               <label for="Add Post Title">Name</label>
               <input type="text" class="form-control" style="background-color: #f9f9f9;height: 45px;" id="Post Title" name="name" value="<?= $wo['user']['first_name']." ".$wo['user']['last_name'] ?>" placeholder="Name" />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 drk_required_style">
               <label for="Add Post Title">Email</label>
               <input name="email" id="" style="background-color: #f9f9f9;height: 45px;" type="email" class="form-control" value="<?= $wo['user']['email'] ?>" placeholder="Email">
             </div>
             <div class="row">
-              <div class="col-md-6">
+              <div class="col-md-6 drk_required_style">
                 <label for="Add Post Title">Select Your Feedback Type</label>
                 <select name="query_type" id="select" class="form-control" class="common" style="background-color: #f9f9f9;height: 45px;">
                   <option value="0">Question</option>
                   <option value="1">Feedback</option>
                 </select>
               </div>
-              <div class="col-md-3">
+              <div class="col-md-3 drk_required_style" >
               <label for="Add Post Title">Select Your image</label>
              <input class="form-control" type="file" name="image" onchange="document.getElementById('feedback-img').src = window.URL.createObjectURL(this.files[0])">
 
               </div>
               <div class="col-md-3 " style="padding-top: 10px;">
-                <img id="feedback-img" alt="your image" width="80" height="75" style="border-radius: 5px;"/>
+                <img id="feedback-img"  width="80" height="75" style="border-radius: 5px;" />
               </div>
             </div>
-            <div class="col-md-12">
+            <div class="col-md-12 drk_required_style">
               <label for="Add Post Title" id="dis">Question Description</label>
               <textarea name="description" class="form-control" style="background-color: #f9f9f9;height:95px;margin-bottom:1.5rem;"><?= $description ?></textarea>
             </div>
