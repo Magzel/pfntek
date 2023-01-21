@@ -210,27 +210,22 @@ $chat_data = $group_chat_list_response['data']['data'];
             </div>
 
             <input id="data" type="text" placeholder="Type something here.." required>
-
-            <!-- <ion-icon name="happy-outline" class="icon-end"></ion-icon>
+<!-- 
+            <ion-icon name="happy-outline" class="icon-end"></ion-icon>
 
             <ion-icon name="attach" class="icon-end"></ion-icon> -->
            
 
-
-         <!-- <div class="image-upload img-attech_send">  -->
-    
-            <!-- <label for="file-input">
+   <div class="image-upload">
+                <!-- <label for="file-input">
                     <img class="imga" src="<?php echo $site_url ?>/themes/sunshine/img/simage.png" />
-                </label>   -->
-                <!-- <input id="myInput" type="file" style="visibility:hidden" accept="image/x-png,image/gif,image/jpeg"/>
-
-               <p title="attach file" class="attachFileSpan" onclick="document.getElementById('myInput').click()">
-                <i class="fa fa-file-image-o"></i>
-        </p> -->
-                <!-- <input id="file-input" type="file" accept="image/x-png,image/gif,image/jpeg" />  -->
-            <!-- </div> -->
+                </label> -->
+                   
+                <input id="file-input" type="file" accept="image/x-png,image/gif,image/jpeg" style="display:none"/>
+            </div> 
+    
             <input type="hidden" id='get_group_id' value="<?= $group_id ?>">
-            <input type="hidden" id='get_user_name' value="<?= '@' . $wo['user']['first_name'] ?>">
+            <input type="hidden" id='get_user_name' value="<?= '@' . $wo['user']['username'] ?>">
             <input type="hidden" id='get_image' value="<?= $wo['user']['avatar'] ?>">
             <div id="loader" class="hide"><img style="width: 40px;" src="<?php echo $site_url ?>/themes/sunshine/img/icons/Spin.gif" alt="shit"></div>
             <div id="send-btn">
@@ -313,7 +308,7 @@ $chat_data = $group_chat_list_response['data']['data'];
         });
         $('#loader').addClass('hide')
         $("#send-btn").css('display', 'block')
-    }, 1000);
+    }, 10000);
 
     $(window).resize(function() {
 

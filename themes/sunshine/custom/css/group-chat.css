@@ -464,7 +464,7 @@
   height: calc(100% - 120px);
   padding: 50px;
   overflow-y: auto;
-  background-color: #f0f2f5;
+  background-color: #d4ddea;
   /* background-color: rgb(226, 217, 217); */
   /* background-image: url('../../img/backgrounds/group-chat-bg.jpg'); */
 }
@@ -735,6 +735,7 @@
 #hide-3-dots{
   display: none;
 }
+
 
 
 
