@@ -17,7 +17,9 @@ $sql_db_user = "pfntek";
 // hamza bd password
 // $sql_db_pass = "code@123Up";
 // rizwan bd password
- $sql_db_pass = "code123Up";
+//  $sql_db_pass = "code123Up";
+//  password new rizwan
+$sql_db_pass ="6aRj_XZgCN695yj6";
 // MySQL Database Name
 $sql_db_name = "pfntek";
 
